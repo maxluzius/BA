@@ -1,0 +1,4 @@
+BA
+==
+
+Bachelorarbeit

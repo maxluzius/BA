@@ -13,7 +13,6 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <regex>
-#include "particle.h"
 
 #include "mainwindow.h"
 
@@ -467,6 +466,8 @@ void OpenGLWidget::draw()
        nextFrame();
        updateTex();
     }
+
+    camPartikel.genParticles(camera);
 }
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)

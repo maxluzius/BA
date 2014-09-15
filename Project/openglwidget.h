@@ -11,7 +11,7 @@
 #include <QFrame>
 #include <QThreadPool>
 #include <QThread>
-
+#include "Particle.h"
 #include "mesh.h"
 
 #include <glm/glm.hpp>
@@ -247,7 +247,7 @@ public:
 
 private:
     float _fov,_nearPlane,_farPlane,_isPerspective;
-
+    particle camPartikel;
     /**
      * @brief Do a perspective projection
      */
@@ -343,6 +343,7 @@ private:
         GLuint texLoc;
     };
     SFT screenFillingTri; ///< Screen Filling Triangle
+
 };
 
 #endif // OPENGLWIDGET_H

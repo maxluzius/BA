@@ -53,6 +53,7 @@ void OpenGLWidget::setCameraPose(float centerX, float centerY, float centerZ,
     camera.setCenter(glm::vec3(centerX,centerY,centerZ));
     camera.setLookAt(glm::vec3(lookAtX,lookAtY,lookAtZ));
     camera.setUp(glm::vec3(upX,upY,upZ));
+    camPartikel.genParticlesPos(camera);  //Partikelerzeugung
 }
 
 void OpenGLWidget::setProjection(float fov, float nearPlane, float farPlane, bool isPerspective)
@@ -467,7 +468,7 @@ void OpenGLWidget::draw()
        updateTex();
     }
 
-    camPartikel.genParticles(camera);
+    //camPartikel.genParticles(camera);
 }
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)

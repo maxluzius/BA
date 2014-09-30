@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     Line.cpp \
     line3d.cpp \
     editobjectwidget.cpp \
-    Particle.cpp
+    Particle.cpp \
+    render.cpp
 
 HEADERS  += \
     openglwidget.h \
@@ -35,7 +36,8 @@ HEADERS  += \
     editobjectwidget.h \
     Line.h \
     line3d.h \
-    Particle.h
+    Particle.h \
+    render.h
 
 FORMS    += \
     mainwindow.ui \

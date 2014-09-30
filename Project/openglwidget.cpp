@@ -58,7 +58,8 @@ void OpenGLWidget::setCameraPose(float centerX, float centerY, float centerZ,
 //    float transY = mesh->getTranslate().y;
 //    float transZ = mesh->getTranslate().z;
 //    camPartikel.print(transX, transY, transZ);
-    camPartikel.genParticlesPos(camera);  //Partikelerzeugung
+    camPartikel.initParticle(camera);  //Partikelerzeugung
+
 }
 
 void OpenGLWidget::setProjection(float fov, float nearPlane, float farPlane, bool isPerspective)
@@ -409,6 +410,9 @@ void OpenGLWidget::initializeGL()
 
 void OpenGLWidget::draw()
 {
+    camera.setCenter(camPartikel.getParticleCenter());
+    camera.setLookAt(camPartikel.getParticleLookAt());
+
     updateScene();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -452,12 +456,9 @@ void OpenGLWidget::draw()
     glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
 
     glm::vec3 cameraPos = camera.center();
-
+    //hier wird auf das img gemalt
     if(mesh != nullptr)
         mesh->draw(&cameraPos);
-//hier wird auf das img gemalt
-    particle test;
-    test.paint();
 
     _program->unbind();
 

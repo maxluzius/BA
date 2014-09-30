@@ -22,10 +22,10 @@ class particle
 public:
     particle();
     void paint();
-    void genParticlesPos(Camera& camera);
-    void genParticlesLookAt(cv::Point3f position, Camera& camera);
+    void initParticle(Camera& camera);
+    void genParticles(glm::vec3 particleV);
+    void genParticles(glm::vec3 particleV, cv::Point3f partPt);
     void writeFile(cv::Point3f position, cv::Point3f lookAt, QString name);
-    void setNewPose(cv::Point3f newPose);
     void setMaxRange(float x, float y, float z);
     void setMinRange(float x, float y, float z);
     float getMaxRangeX();
@@ -35,7 +35,12 @@ public:
     float getMinRange();
     void setRanges(float x, float y, float z, float r);
     void print(float x, float y, float z);
-    double particleTime();
+    void setCenter(Camera& camera);
+    void setLookAt(Camera& camera);
+    glm::vec3 getParticleCenter();
+    glm::vec3 getParticleLookAt();
+    void setParticleCenter(cv::Point3f point);
+    void setParticleLookAt(cv::Point3f point);
 
 private:
     int dim;
@@ -46,7 +51,12 @@ private:
     float zRange;
     float maxRange[3];
     float minRange[3];
-    Camera& camera;
+    glm::vec3 centerCameraV;
+    glm::vec3 lookAtCameraV;
+    glm::vec3 particleCenterV;
+    glm::vec3 particleLookAtV;
+    Mesh* mesh;
+
 };
 
 #endif // PARTICLE_H

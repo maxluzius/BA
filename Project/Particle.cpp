@@ -9,10 +9,22 @@ particle::particle()
     nParticles = 7;
 }
 
+void particle::setCenter(Camera& camera){
+    centerCameraV.x = camera.center().x;
+    centerCameraV.y = camera.center().y;
+    centerCameraV.z = camera.center().z;
+}
+
+void particle::setLookAt(Camera &camera){
+    lookAtCameraV.x = camera.lookAt().x;
+    lookAtCameraV.y = camera.lookAt().y;
+    lookAtCameraV.z = camera.lookAt().z;
+}
+
 void particle::setMaxRange(float x, float y, float z){
-    xRange = x;
-    yRange = y;
-    zRange = z;
+    xRange = x;  // Vor/zurück "Z-Achse" der Kamera
+    yRange = y;  // Höhe "Up-Vektor"
+    zRange = z;  // Links/Rechts
     maxRange[0] = x;
     maxRange[1] = y;
     maxRange[2] = z;
@@ -55,40 +67,36 @@ void particle::setRanges(float x, float y, float z, float r){
     setMinRange(minX, minY, minZ);
 }
 
-double particle::particleTime(){
-    //Variablen
-    LONGLONG g_Frequency, g_CurentCount, g_LastCount;
-
-    //Frequenz holen
-    if (!QueryPerformanceFrequency((LARGE_INTEGER*)&g_Frequency))
-        std::cout << "Performance Counter nicht vorhanden" << std::endl;
-
-    //1. Messung
-    QueryPerformanceCounter((LARGE_INTEGER*)&g_CurentCount);
-
-    Sleep(10);  // Sleep ist ungenau, darum wird nicht 10ms herauskommen
-
-    //2. Messung
-    QueryPerformanceCounter((LARGE_INTEGER*)&g_LastCount);
-
-    double dTimeDiff = (((double)(g_LastCount-g_CurentCount))/((double)g_Frequency));
-
-    return dTimeDiff;
+void particle::initParticle(Camera& camera){
+    setCenter(camera);
+    setLookAt(camera);
+    genParticles(centerCameraV);
 }
 
-void particle::genParticlesPos(Camera& camera)
+glm::vec3 particle::getParticleCenter(){
+    return particleCenterV;
+}
+
+glm::vec3 particle::getParticleLookAt(){
+    return particleLookAtV;
+}
+
+void particle::setParticleCenter(cv::Point3f point){
+    particleCenterV.x = point.x;
+    particleCenterV.y = point.y;
+    particleCenterV.z = point.z;
+}
+
+void particle::setParticleLookAt(cv::Point3f point){
+    particleLookAtV.x = point.x;
+    particleLookAtV.y = point.y;
+    particleLookAtV.z = point.z;
+}
+
+void particle::genParticles(glm::vec3 particleV)
 {
-    //Position der Kamera
-    cv::Mat_<float> lastCam(3,1);
-    lastCam(0) = camera.center().x;
-    lastCam(1) = camera.center().y;
-    lastCam(2) = camera.center().z;
-    //LookAt der Kamera
-    cv::Point3f LookAtPt(camera.lookAt().x, camera.lookAt().y, camera.lookAt().z);
-
-
     //Bereich der Partikelstreuung
-    setRanges(lastCam(0), lastCam(1), lastCam(2), 10.0);
+    setRanges(particleV.x, particleV.y, particleV.z, 10.0);
 
     CvMat LB, UB;
     cvInitMatHeader(&LB, 3, 1, CV_32FC1, minRange);
@@ -114,24 +122,20 @@ void particle::genParticlesPos(Camera& camera)
       cameraV.clear();
       newCameraV.clear();
 
-      //Echte Pose
-      cv::Point3f measPt(lastCam(0),lastCam(1),lastCam(2));
-      cameraV.push_back(measPt);
-
-
       for (int i = 0; i < condens->SamplesNum; i++) {
 
          //Berechnung der Abweichung
-         float diffX = (lastCam(0) - condens->flSamples[i][0])/xRange;
-         float diffY = (lastCam(1) - condens->flSamples[i][1])/yRange;
-         float diffZ = (lastCam(2) - condens->flSamples[i][2])/zRange;
+         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
+         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
+         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
          condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
 
          // Partikelstreuung werde ich benötigen
          cv::Point3f partPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
-         particle genParticle;
-         genParticle.genParticlesLookAt(partPt, camera);
-         cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
+
+         setParticleCenter(partPt);
+         genParticles(lookAtCameraV, partPt);
+         //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
        }
@@ -141,25 +145,13 @@ void particle::genParticlesPos(Camera& camera)
        //Bester Partikel, ist aber keine der Partikelpositionen
        cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
        newCameraV.push_back(statePt);
-       cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
-       glm::vec3 newCenter;
-       newCenter.x = condens->State[0];
-       newCenter.y = condens->State[1];
-       newCenter.z = condens->State[2];
-       camera.setCenter(newCenter);
+       //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
 
-void particle::genParticlesLookAt(cv::Point3f position, Camera &camera){
-    //Position der Kamera
-    cv::Mat_<float> lastCam(3,1);
-    lastCam(0) = position.x;
-    lastCam(1) = position.y;
-    lastCam(2) = position.z;
-
-    double time = particleTime();
-    float r = 10.0 + time;
+void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt)
+{
     //Bereich der Partikelstreuung
-    setRanges(lastCam(0), lastCam(1), lastCam(2), r);
+    setRanges(particleV.x, particleV.y, particleV.z, 5.0);
 
     CvMat LB, UB;
     cvInitMatHeader(&LB, 3, 1, CV_32FC1, minRange);
@@ -185,25 +177,20 @@ void particle::genParticlesLookAt(cv::Point3f position, Camera &camera){
       cameraV.clear();
       newCameraV.clear();
 
-      //Echte Pose
-      cv::Point3f measPt(lastCam(0),lastCam(1),lastCam(2));
-      cameraV.push_back(measPt);
-
       for (int i = 0; i < condens->SamplesNum; i++) {
 
          //Berechnung der Abweichung
-         float diffX = (lastCam(0) - condens->flSamples[i][0])/xRange;
-         float diffY = (lastCam(1) - condens->flSamples[i][1])/yRange;
-         float diffZ = (lastCam(2) - condens->flSamples[i][2])/zRange;
+         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
+         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
+         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
          condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
 
          // Partikelstreuung werde ich benötigen
-        //cout << condens->flSamples[i][0] << "/" << condens->flSamples[i][0] - position.x << "/" << position.x << endl;
-         cv::Point3f lookAtPt( condens->flSamples[i][0] - position.x, condens->flSamples[i][1] - position.y, condens->flSamples[i][2] - position.z);
-         cout << "PartikelLookAt: X-Achse: " << condens->flSamples[i][0] << "/" << lookAtPt.x <<
-                                " Y-Achse: " << condens->flSamples[i][1] << "/" << lookAtPt.y <<
-                                " Z-Achse: " << condens->flSamples[i][2] << "/" << lookAtPt.z << endl;
-         writeFile(position, lookAtPt, "particle.txt");
+         cv::Point3f lookAtPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
+         setParticleLookAt(lookAtPt);
+         writeFile(partPt, lookAtPt, "particle.txt");
+         //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
+         //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
        }
 
@@ -212,13 +199,9 @@ void particle::genParticlesLookAt(cv::Point3f position, Camera &camera){
        //Bester Partikel, ist aber keine der Partikelpositionen
        cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
        newCameraV.push_back(statePt);
-       cout << "NeueLookAt: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
-//       glm::vec3 newLookAt;
-//       newLookAt.x = condens->State[0];
-//       newLookAt.y = condens->State[1];
-//       newLookAt.z = condens->State[2];
-//       camera.setLookAt(newLookAt);
+       //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
+
 
 void particle::writeFile(cv::Point3f position, cv::Point3f lookAt, QString name){
     QFile file(name);
@@ -227,14 +210,10 @@ void particle::writeFile(cv::Point3f position, cv::Point3f lookAt, QString name)
     QTextStream out(&file);
     //gezeichnet wird der vector von position zu lookAt + position
     //Ausgabe ist x/z/y da die Y und Z Achse in gnuplot vertauscht ist
-    out << position.x << "   " << position.z << "   " << position.y << "   " << lookAt.x << "   " << lookAt.z << "   " << lookAt.y << "\n";
+    out << position.x << "   " << position.z << "   " << position.y << "   " << lookAt.x - position.x << "   " << lookAt.z - position.z << "   " << lookAt.y - position.y << "\n";
 
     file.close();
     //}
-}
-
-void particle::setNewPose(cv::Point3f newPose){
-
 }
 
 void particle::print(float x, float y, float z){

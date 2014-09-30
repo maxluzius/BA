@@ -248,6 +248,7 @@ public:
 private:
     float _fov,_nearPlane,_farPlane,_isPerspective;
     particle camPartikel;
+
     /**
      * @brief Do a perspective projection
      */

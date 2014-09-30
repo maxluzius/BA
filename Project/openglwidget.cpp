@@ -53,6 +53,11 @@ void OpenGLWidget::setCameraPose(float centerX, float centerY, float centerZ,
     camera.setCenter(glm::vec3(centerX,centerY,centerZ));
     camera.setLookAt(glm::vec3(lookAtX,lookAtY,lookAtZ));
     camera.setUp(glm::vec3(upX,upY,upZ));
+
+//    float transX = mesh->getTranslate().x;
+//    float transY = mesh->getTranslate().y;
+//    float transZ = mesh->getTranslate().z;
+//    camPartikel.print(transX, transY, transZ);
     camPartikel.genParticlesPos(camera);  //Partikelerzeugung
 }
 
@@ -105,6 +110,7 @@ void OpenGLWidget::getTransformation(float &transX, float &transY, float &transZ
     scaleX = mesh->getScale().x;
     scaleY = mesh->getScale().y;
     scaleZ = mesh->getScale().z;
+
 }
 
 void OpenGLWidget::setObjectPath(std::string filename)

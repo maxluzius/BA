@@ -70,6 +70,7 @@ Mesh *EditObjectWidget::getMesh() const
 
 void EditObjectWidget::setMesh(Mesh *value)
 {
+
     mesh = value;
 
     ui->spinPositionX->setValue(mesh->getTranslate().x);

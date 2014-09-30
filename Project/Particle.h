@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <time.h>
+#include "mesh.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -22,7 +23,7 @@ public:
     particle();
     void paint();
     void genParticlesPos(Camera& camera);
-    void genParticlesLookAt(cv::Point3f position);
+    void genParticlesLookAt(cv::Point3f position, Camera& camera);
     void writeFile(cv::Point3f position, cv::Point3f lookAt, QString name);
     void setNewPose(cv::Point3f newPose);
     void setMaxRange(float x, float y, float z);
@@ -33,6 +34,8 @@ public:
     float* getMaxRange();
     float getMinRange();
     void setRanges(float x, float y, float z, float r);
+    void print(float x, float y, float z);
+    double particleTime();
 
 private:
     int dim;
@@ -43,6 +46,7 @@ private:
     float zRange;
     float maxRange[3];
     float minRange[3];
+    Camera& camera;
 };
 
 #endif // PARTICLE_H

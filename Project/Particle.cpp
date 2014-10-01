@@ -3,23 +3,14 @@
 
  vector<cv::Point3f> cameraV, newCameraV;
 
+
+
 particle::particle()
 {
     dim = 3;
-    nParticles = 7;
+    nParticles = 20;
 }
 
-void particle::setCenter(Camera& camera){
-    centerCameraV.x = camera.center().x;
-    centerCameraV.y = camera.center().y;
-    centerCameraV.z = camera.center().z;
-}
-
-void particle::setLookAt(Camera &camera){
-    lookAtCameraV.x = camera.lookAt().x;
-    lookAtCameraV.y = camera.lookAt().y;
-    lookAtCameraV.z = camera.lookAt().z;
-}
 
 void particle::setMaxRange(float x, float y, float z){
     xRange = x;  // Vor/zurück "Z-Achse" der Kamera
@@ -52,8 +43,8 @@ float *particle::getMaxRange(){
     return maxRange;
 }
 
-float particle::getMinRange(){
-    return 30.0;
+float *particle::getMinRange(){
+    return minRange;
 }
 
 void particle::setRanges(float x, float y, float z, float r){
@@ -67,34 +58,34 @@ void particle::setRanges(float x, float y, float z, float r){
     setMinRange(minX, minY, minZ);
 }
 
+cv::Mat_<float> particle::getParticleCenterM(){
+    return particleCenterM;
+}
+
+cv::Mat_<float> particle::getParticleLookAtM(){
+    return particleLookAtM;
+}
+
 void particle::initParticle(Camera& camera){
-    setCenter(camera);
-    setLookAt(camera);
-    genParticles(centerCameraV);
+
+    particleCenterM = cv::Mat::zeros(nParticles,dim, CV_32F);
+    particleLookAtM = cv::Mat::zeros(nParticles * nParticles, dim, CV_32F);
+
+    centerCamera.x = camera.center().x;
+    centerCamera.y = camera.center().y;
+    centerCamera.z = camera.center().z;
+    lookAtCamera.x = camera.lookAt().x;
+    lookAtCamera.y = camera.lookAt().y;
+    lookAtCamera.z = camera.lookAt().z;
+    genParticles(centerCamera);
+
 }
 
-glm::vec3 particle::getParticleCenter(){
-    return particleCenterV;
-}
-
-glm::vec3 particle::getParticleLookAt(){
-    return particleLookAtV;
-}
-
-void particle::setParticleCenter(cv::Point3f point){
-    particleCenterV.x = point.x;
-    particleCenterV.y = point.y;
-    particleCenterV.z = point.z;
-}
-
-void particle::setParticleLookAt(cv::Point3f point){
-    particleLookAtV.x = point.x;
-    particleLookAtV.y = point.y;
-    particleLookAtV.z = point.z;
-}
 
 void particle::genParticles(glm::vec3 particleV)
 {
+
+    particleCenterM.setTo(cv::Scalar(0));
     //Bereich der Partikelstreuung
     setRanges(particleV.x, particleV.y, particleV.z, 10.0);
 
@@ -133,8 +124,10 @@ void particle::genParticles(glm::vec3 particleV)
          // Partikelstreuung werde ich benötigen
          cv::Point3f partPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
 
-         setParticleCenter(partPt);
-         genParticles(lookAtCameraV, partPt);
+         particleCenterM(i,0) = partPt.x;
+         particleCenterM(i,1) = partPt.y;
+         particleCenterM(i,2) = partPt.z;
+         genParticles(lookAtCamera, partPt, i);
          //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
@@ -148,7 +141,7 @@ void particle::genParticles(glm::vec3 particleV)
        //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
 
-void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt)
+void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt, int j)
 {
     //Bereich der Partikelstreuung
     setRanges(particleV.x, particleV.y, particleV.z, 5.0);
@@ -187,7 +180,10 @@ void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt)
 
          // Partikelstreuung werde ich benötigen
          cv::Point3f lookAtPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
-         setParticleLookAt(lookAtPt);
+
+         particleLookAtM(i + j * nParticles,0) = lookAtPt.x;
+         particleLookAtM(i + j * nParticles,1) = lookAtPt.y;
+         particleLookAtM(i + j * nParticles,2) = lookAtPt.z;
          writeFile(partPt, lookAtPt, "particle.txt");
          //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");

@@ -13,6 +13,7 @@
 #include <QThread>
 #include "Particle.h"
 #include "mesh.h"
+#include "renderer.h"
 
 #include <glm/glm.hpp>
 #include "Shader.h"
@@ -248,6 +249,8 @@ public:
 private:
     float _fov,_nearPlane,_farPlane,_isPerspective;
     particle camPartikel;
+    renderer renderObj;
+    cv::Point2i loop;
 
     /**
      * @brief Do a perspective projection

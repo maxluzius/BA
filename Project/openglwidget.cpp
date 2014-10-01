@@ -59,7 +59,6 @@ void OpenGLWidget::setCameraPose(float centerX, float centerY, float centerZ,
 //    float transZ = mesh->getTranslate().z;
 //    camPartikel.print(transX, transY, transZ);
     camPartikel.initParticle(camera);  //Partikelerzeugung
-
 }
 
 void OpenGLWidget::setProjection(float fov, float nearPlane, float farPlane, bool isPerspective)
@@ -410,58 +409,23 @@ void OpenGLWidget::initializeGL()
 
 void OpenGLWidget::draw()
 {
-    camera.setCenter(camPartikel.getParticleCenter());
-    camera.setLookAt(camPartikel.getParticleLookAt());
-
     updateScene();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    /////////////////////
-    // Draw Background //
-    /////////////////////
 
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    _imageProgram->bind();
+    ///////////////////////////
+    // Draw Geometry Particle//
+    ///////////////////////////
 
-    if(getSceneType() == TYPE_VIDEO && isPlaying){
-        _frame++;
+    if(!renderObj.getIsDone()){
+       loop = renderObj.setupCamera(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, loop);
+
+
+        renderObj.rendern(mesh);
+
+        _program->unbind();
+        //cout << loop.x << "/" << loop.y << endl;
     }
-
-    glBindVertexArray(screenFillingTri.vao);
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(screenFillingTri.texLoc,0);
-    glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
-
-    glDrawArrays(GL_TRIANGLES,0,3);
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D,0);
-
-    _imageProgram->unbind();
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-
-    ///////////////////
-    // Draw Geometry //
-    ///////////////////
-
-    _program->bind();
-
-    m = mesh->computeModelMatrix();
-    v = camera.getViewMatrix();
-
-    glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
-    glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
-    glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
-
-    glm::vec3 cameraPos = camera.center();
-    //hier wird auf das img gemalt
-    if(mesh != nullptr)
-        mesh->draw(&cameraPos);
-
-    _program->unbind();
-
 
     if(getSceneType() == TYPE_VIDEO && isPlaying){
         if(_frame >= _frameCountVideo-1)
@@ -475,6 +439,43 @@ void OpenGLWidget::draw()
        updateTex();
     }
 
+    /////////////////////
+    // Draw Background //
+    /////////////////////
+    if(renderObj.getIsDone()){
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+        _imageProgram->bind();
+
+        if(getSceneType() == TYPE_VIDEO && isPlaying){
+            _frame++;
+        }
+
+        glBindVertexArray(screenFillingTri.vao);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(screenFillingTri.texLoc,0);
+        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
+
+        glDrawArrays(GL_TRIANGLES,0,3);
+
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        _imageProgram->unbind();
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+    }
+    if(getSceneType() == TYPE_VIDEO && isPlaying){
+        if(_frame >= _frameCountVideo-1)
+        {
+            _frame = 0;
+            video.set(cv::CAP_PROP_POS_FRAMES,_frame);
+        }
+
+
+       nextFrame();
+       updateTex();
+    }
     //camPartikel.genParticles(camera);
 }
 

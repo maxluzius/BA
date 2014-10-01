@@ -24,7 +24,7 @@ public:
     void paint();
     void initParticle(Camera& camera);
     void genParticles(glm::vec3 particleV);
-    void genParticles(glm::vec3 particleV, cv::Point3f partPt);
+    void genParticles(glm::vec3 particleV, cv::Point3f partPt, int count);
     void writeFile(cv::Point3f position, cv::Point3f lookAt, QString name);
     void setMaxRange(float x, float y, float z);
     void setMinRange(float x, float y, float z);
@@ -32,15 +32,11 @@ public:
     float getMaxRangeY();
     float getMaxRangeZ();
     float* getMaxRange();
-    float getMinRange();
+    float* getMinRange();
+    cv::Mat_<float> getParticleCenterM();
+    cv::Mat_<float> getParticleLookAtM();
     void setRanges(float x, float y, float z, float r);
     void print(float x, float y, float z);
-    void setCenter(Camera& camera);
-    void setLookAt(Camera& camera);
-    glm::vec3 getParticleCenter();
-    glm::vec3 getParticleLookAt();
-    void setParticleCenter(cv::Point3f point);
-    void setParticleLookAt(cv::Point3f point);
 
 private:
     int dim;
@@ -51,11 +47,10 @@ private:
     float zRange;
     float maxRange[3];
     float minRange[3];
-    glm::vec3 centerCameraV;
-    glm::vec3 lookAtCameraV;
-    glm::vec3 particleCenterV;
-    glm::vec3 particleLookAtV;
-    Mesh* mesh;
+    cv::Mat_<float> particleCenterM;
+    cv::Mat_<float> particleLookAtM;
+    glm::vec3 centerCamera;
+    glm::vec3 lookAtCamera;
 
 };
 

@@ -28,7 +28,7 @@ cv::Point2i renderer::setupCamera(Camera &camera,Mesh* mesh, particle camPartike
             cameraLookAt.x = lookAtMat(i * centerMat.rows + j, 0);
             cameraLookAt.y = lookAtMat(i * centerMat.rows + j, 1);
             cameraLookAt.z = lookAtMat(i * centerMat.rows + j, 2);
-            cout << i * centerMat.rows + j << ": " << cameraLookAt.x << "/" << cameraLookAt.y << "/" << cameraLookAt.z << endl;
+            //cout << i * centerMat.rows + j << ": " << cameraLookAt.x << "/" << cameraLookAt.y << "/" << cameraLookAt.z << endl;
             camera.setLookAt(cameraLookAt);
 
             _program->bind();
@@ -40,7 +40,7 @@ cv::Point2i renderer::setupCamera(Camera &camera,Mesh* mesh, particle camPartike
             glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
             glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
             loop.x = i;
-            loop.y = j +1;
+            loop.y = j + 1;
             return loop;
         }
         loop.x += 1;

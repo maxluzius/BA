@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     line3d.cpp \
     editobjectwidget.cpp \
     Particle.cpp \
-    renderer.cpp
+    renderer.cpp \
+    glwidget.cpp
 
 HEADERS  += \
     openglwidget.h \
@@ -37,7 +38,8 @@ HEADERS  += \
     Line.h \
     line3d.h \
     Particle.h \
-    renderer.h
+    renderer.h \
+    glwidget.h
 
 FORMS    += \
     mainwindow.ui \
@@ -45,9 +47,16 @@ FORMS    += \
     editobjectwidget.ui
 
 
-RESOURCES +=
-	
-	
+# install
+target.path = $$[QT_INSTALL_EXAMPLES]/opengl/framebufferobject2
+INSTALLS += target
+
+contains(QT_CONFIG, opengles.) {
+    contains(QT_CONFIG, angle): \
+        warning("Qt was built with ANGLE, which provides only OpenGL ES 2.0 on top of DirectX 9.0c")
+    error("This example requires Qt to be configured with -opengl desktop")
+}
+
 INCLUDEPATH += ..\..\glm-0.9.5.4\glm\
 
 win32: LIBS += -L$$PWD/../../glew-1.10.0/lib/Release/Win32/ -lglew32
@@ -60,3 +69,8 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../opencv/libs
 
 INCLUDEPATH += $$PWD/../../../../opencv/include
 DEPENDPATH += $$PWD/../../../../opencv/include
+
+RESOURCES += \
+    framebufferobject2.qrc
+
+

@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <regex>
 
+
 #include "mainwindow.h"
 
 OpenGLWidget::OpenGLWidget(QWidget *parent) :
@@ -38,6 +39,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) :
     setMouseTracking(true); // Enable mouse continuous tracking
 
     timer = nullptr;
+
 }
 
 OpenGLWidget::~OpenGLWidget()
@@ -362,6 +364,9 @@ void OpenGLWidget::setFrame(int frame)
 
 void OpenGLWidget::initializeGL()
 {
+    makeCurrent();
+    fbo = new QGLFramebufferObject(_viewportWidth, _viewportHeight);
+
     glewExperimental = true;
 
     GLenum err = glewInit();
@@ -393,6 +398,7 @@ void OpenGLWidget::initializeGL()
     glGenVertexArrays(1,&screenFillingTri.vao);
     glBindVertexArray(screenFillingTri.vao);
 
+
     GLuint buffer;
     glGenBuffers(1,&buffer);
     glBindBuffer(GL_ARRAY_BUFFER,buffer);
@@ -405,6 +411,8 @@ void OpenGLWidget::initializeGL()
     glBindVertexArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
 }
 
 void OpenGLWidget::draw()
@@ -412,37 +420,9 @@ void OpenGLWidget::draw()
     updateScene();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-    ///////////////////////////
-    // Draw Geometry Particle//
-    ///////////////////////////
-
-    if(!renderObj.getIsDone()){
-       loop = renderObj.setupCamera(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, loop);
-
-
-        renderObj.rendern(mesh);
-
-        _program->unbind();
-        //cout << loop.x << "/" << loop.y << endl;
-    }
-
-    if(getSceneType() == TYPE_VIDEO && isPlaying){
-        if(_frame >= _frameCountVideo-1)
-        {
-            _frame = 0;
-            video.set(cv::CAP_PROP_POS_FRAMES,_frame);
-        }
-
-
-       nextFrame();
-       updateTex();
-    }
-
     /////////////////////
     // Draw Background //
     /////////////////////
-    if(renderObj.getIsDone()){
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
         _imageProgram->bind();
@@ -464,7 +444,44 @@ void OpenGLWidget::draw()
         _imageProgram->unbind();
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
-    }
+
+
+    ///////////////////////////
+    // Draw Geometry Particle//
+    ///////////////////////////
+
+        //lists[1]=1;
+        pbufferList = glGenLists(10);
+        loop = renderObj.setupCamera(camera, mesh, camPartikel,_program, _imageProgram, m, v, p, mLoc, vLoc, pLoc, loop, _viewportWidth,_viewportHeight, screenFillingTri.texID, pbufferList, fbo);
+
+
+//        // render to the framebuffer object
+//        fbo->bind();
+//        glListBase(pbufferList);
+//        glCallLists(2, GL_INT, lists);
+//        fbo->release();
+//        //  ------------------------- hierdurch werden die gerenderten boxen erst sichtbar
+//        glBindTexture(GL_TEXTURE_2D, fbo->texture());
+
+
+        //cout << loop.x << "/" << loop.y << endl;
+
+
+//        _program->bind();
+
+//        m = mesh->computeModelMatrix();
+//        v = camera.getViewMatrix();
+//        glm::vec3 cameraPos = camera.center();
+//        glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
+//        glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
+//        glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
+
+//        if(mesh != nullptr)
+//            mesh->draw(&cameraPos);
+
+
+//        _program->unbind();
+
     if(getSceneType() == TYPE_VIDEO && isPlaying){
         if(_frame >= _frameCountVideo-1)
         {
@@ -476,6 +493,9 @@ void OpenGLWidget::draw()
        nextFrame();
        updateTex();
     }
+
+
+
     //camPartikel.genParticles(camera);
 }
 

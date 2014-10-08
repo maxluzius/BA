@@ -21,6 +21,7 @@
 #include "camera.h"
 
 #include <opencv2/opencv.hpp>
+#include <QtOpenGL/QGLFramebufferObject>
 
 class MainWindow;
 
@@ -251,6 +252,9 @@ private:
     particle camPartikel;
     renderer renderObj;
     cv::Point2i loop;
+    GLuint pbufferList;
+
+    QGLFramebufferObject *fbo;
 
     /**
      * @brief Do a perspective projection

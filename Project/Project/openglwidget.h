@@ -263,6 +263,7 @@ private:
 
     Shader* _program; ///< Shader program for the mesh
     Shader* _imageProgram; ///< Shader program for the screen filling triangle
+    Shader* _sobelProgram; ///< Shader program for sobel filtering
 
     int sceneType; ///< the type of the scene TYPE_IMAGE or TYPE_VIDEO
     std::string filename; ///< the filename of the scene

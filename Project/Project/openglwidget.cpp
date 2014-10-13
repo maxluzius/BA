@@ -380,8 +380,10 @@ void OpenGLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     _program = new Shader("../Shaders/vertexshader.glsl","../Shaders/fragmentshader.glsl");
     _imageProgram = new Shader("../Shaders/screenFillingTriVert.glsl","../Shaders/showImageFrag.glsl");
+    _sobelProgram = new Shader("../Shaders/vertexSobel.glsl","../Shaders/fragmentSobel.glsl");
 
     screenFillingTri.texLoc = glGetUniformLocation(_imageProgram->id(),"tex");
+    screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
     mLoc = glGetUniformLocation(_program->id(),"M");
     vLoc = glGetUniformLocation(_program->id(),"V");
     pLoc = glGetUniformLocation(_program->id(),"P");
@@ -442,6 +444,30 @@ void OpenGLWidget::draw()
         glBindTexture(GL_TEXTURE_2D,0);
 
         _imageProgram->unbind();
+
+
+        /////////////////////
+        // Draw Sobelfilter//
+        /////////////////////
+
+
+        _sobelProgram->bind();
+
+        if(getSceneType() == TYPE_VIDEO && isPlaying){
+            _frame++;
+        }
+
+        glBindVertexArray(screenFillingTri.vao);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(screenFillingTri.texLoc,0);
+        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
+
+        glDrawArrays(GL_TRIANGLES,0,3);
+
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        _sobelProgram->unbind();
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
 

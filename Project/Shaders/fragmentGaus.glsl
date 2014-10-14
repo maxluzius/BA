@@ -45,9 +45,11 @@ void main() {
     //in x Richtung
     float v = grayibl + 2.0 * grayil + grayitl - grayibr - 2.0 * grayir - grayitr;
 
-    float grayimg = sqrt(h * h + v * v);
+    //float grayimg = sqrt(h * h + v * v);
     //float grayimg = atan(h,v);
-
+    float graytop = grayitl * 0.045 + grayit * 0.08 + grayitr * 0.045;                                  float graymid = grayil  * 0.08 + grayi  * 0.5 + grayir * 0.08; 
+    float graybot = grayibl * 0.045 + grayib * 0.08 + grayibr * 0.045;
+    float grayimg = graytop + graymid + graybot;
 
 	fragmentColor = vec3(grayimg);
 

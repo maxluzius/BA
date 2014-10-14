@@ -13,8 +13,25 @@ bool renderer::getIsDone(){
     return isDone;
 }
 
+void renderer::genImg(){
+    //Bild zum Vergleich wird erstellt
+    cv::Mat img(480, 720, CV_8UC3);
 
-cv::Point2i renderer::setupCamera(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo){
+    //use fast 4-byte alignment (default anyway) if possible
+    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
+    //set length of one complete row in destination data (doesn't need to equal img.cols)
+    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+    //Pixel werden ausgelesen und im img gespeichert
+    glReadPixels(0, 0, img.cols, img.rows, GL_BGR, GL_UNSIGNED_BYTE, img.data);
+
+    //muss geflippt werden, da opencv images von top to bottom speichert
+    cv::flip(img, img, 0);
+
+    //cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);// Create a window for display.
+    //cv::imshow( "Display window", img );       // Show our image inside it.
+}
+
+cv::Point2i renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo){
 
     cv::Mat_<float> centerMat = camPartikel.getParticleCenterM();
     cv::Mat_<float> lookAtMat = camPartikel.getParticleLookAtM();
@@ -63,7 +80,8 @@ cv::Point2i renderer::setupCamera(Camera &camera,Mesh* mesh, particle camPartike
 
             //  ------------------------- hierdurch werden die gerenderten boxen erst sichtbar
             glBindTexture(GL_TEXTURE_2D, fbo->texture());
-            cout << i * centerMat.rows + j << endl;
+            //cout << i * centerMat.rows + j << endl;
+            genImg();
             //hier müsste der sobelfilter angewendet und das bild ausgelesen werden.
             glDeleteLists(pbufferList,1);
         }

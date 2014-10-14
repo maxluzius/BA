@@ -39,9 +39,10 @@ public:
     renderer();
     void sobel();
     void rendern(Mesh* mesh);
-    cv::Point2i setupCamera(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo);
+    cv::Point2i renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo);
     void setIsDone(bool var);
     bool getIsDone();
+    void genImg();
 
 private:
     glm::vec3 cameraPos;

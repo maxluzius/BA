@@ -453,10 +453,6 @@ void OpenGLWidget::draw()
 
         _sobelProgram->bind();
 
-        if(getSceneType() == TYPE_VIDEO && isPlaying){
-            _frame++;
-        }
-
         glBindVertexArray(screenFillingTri.vao);
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(screenFillingTri.texLoc,0);
@@ -471,13 +467,32 @@ void OpenGLWidget::draw()
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
 
+       //renderObj.genImg();
+
+        //Bild zum Vergleich wird erstellt
+        cv::Mat img(480, 720, CV_8UC3);
+
+        //use fast 4-byte alignment (default anyway) if possible
+        glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
+        //set length of one complete row in destination data (doesn't need to equal img.cols)
+        glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
+        //Pixel werden ausgelesen und im img gespeichert
+        glReadPixels(0, 0, img.cols, img.rows, GL_BGR, GL_UNSIGNED_BYTE, img.data);
+
+        //muss geflippt werden, da opencv images von top to bottom speichert
+        cv::flip(img, img, 0);
+
+        cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);// Create a window for display.
+        cv::imshow( "Display window", img );       // Show our image inside it.
+        //how to work with the pixelinformation
+        //flipped.at<cv::vec3b>(x,y);
 
     ///////////////////////////
     // Draw Geometry Particle//
     ///////////////////////////
 
 
-        //renderObj.setupCamera(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, fbo);
+        renderObj.renderMeshes(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, fbo);
 
 
     if(getSceneType() == TYPE_VIDEO && isPlaying){

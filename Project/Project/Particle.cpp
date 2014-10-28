@@ -8,7 +8,7 @@
 particle::particle()
 {
     dim = 3;
-    nParticles = 10;
+    nParticles = 3;
 }
 
 

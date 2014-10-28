@@ -17,6 +17,7 @@ in vec2 passUV;
 uniform sampler2D tex;
 
 out vec3 fragmentColor;
+layout(location = 0) out vec3 color;
 
 void main() {
 
@@ -45,11 +46,16 @@ void main() {
     //in x Richtung
     float v = grayibl + 2.0 * grayil + grayitl - grayibr - 2.0 * grayir - grayitr;
 
-    float grayimg = sqrt(h * h + v * v);
-    //float grayimg = atan(h,v);
-
-
-	fragmentColor = vec3(grayimg);
-
+    float gradientMagnitude = sqrt(h * h + v * v);
+    float gradientDirection = atan(h,v);
+    if(gradientMagnitude <= 0.3)
+        fragmentColor = vec3(0.0);
+    else{
+    fragmentColor = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
+    //color for the texture we are writing to
+    color = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
+    //fragmentColor = vec3(textureCoordinate, 0.0);
+    //color = vec3(textureCoordinate,0.0);
+    }
 }
 

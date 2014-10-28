@@ -1,6 +1,6 @@
 #version 330
 
-layout (location = 1) in vec2 positionAttribute;
+layout (location = 0) in vec2 positionAttribute;
 out vec2 passUV;
 
  varying vec2 textureCoordinate;

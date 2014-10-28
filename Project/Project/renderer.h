@@ -39,17 +39,21 @@ public:
     renderer();
     void sobel();
     void rendern(Mesh* mesh);
-    cv::Point2i renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo);
-    void setIsDone(bool var);
-    bool getIsDone();
-    void genImg();
+    void renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, int pixelCounter,GLuint handle);
+    cv::Mat genImg();
+    int count(cv::Mat img);
+    void likelihood(int videoCount, int particleCount);
+    void initQuery();
 
 private:
     glm::vec3 cameraPos;
     glm::vec3 cameraLookAt;
-    bool isDone;
     Camera camera;
-    cv::Point2i loop;
+    GLuint texLoc;
+    int pixelCounterMesh;
+    int maxLikelihood;
+    GLuint PixelCount;
+
 };
 
 #endif // RENDER_H

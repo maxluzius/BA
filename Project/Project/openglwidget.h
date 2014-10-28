@@ -247,12 +247,17 @@ public:
      */
     void setCamera(const Camera &value);
 
+    void generateTextureMap();
+
 private:
     float _fov,_nearPlane,_farPlane,_isPerspective;
     particle camPartikel;
     renderer renderObj;
     cv::Point2i loop;
     GLuint pbufferList;
+    int pixelCounter;
+    GLuint framebufferHandle;
+    GLuint handle;
 
     QGLFramebufferObject *fbo;
 

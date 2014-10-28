@@ -46,6 +46,7 @@ void Mesh::draw(glm::vec3 *camPos)
 
     if(_doVisibilityCheck)
     {
+
         assert(camPos && V && P);
         _visibleIndices.clear();
         _visibleLines.clear();
@@ -61,6 +62,7 @@ void Mesh::draw(glm::vec3 *camPos)
             }
         }
 
+        //to debug GL_TRIANGLE_STRIP
         glDrawElements(GL_LINES,_visibleIndices.size(),GL_UNSIGNED_INT,_visibleIndices.data());
     }
     else

@@ -283,7 +283,7 @@ void OpenGLWidget::paintGL()
 void OpenGLWidget::resizeGL(int w, int h)
 {
     _viewportWidth = w;//*devicePixelRatio();
-    _viewportHeight = h;//*devicePixelRatio();
+    _viewportHeight = h;//*devicePixelRatio();;
     glViewport(0,0,_viewportWidth, _viewportHeight);
     _aspect = (float)w / (float)(h);
 
@@ -376,6 +376,18 @@ void OpenGLWidget::initializeGL()
         throw std::exception("Failed to initialize GLEW!");
     }
 
+    //FBO to save the sobeltexture
+    glGenFramebuffers(1, &framebufferHandle);
+
+    glGenTextures(1, &handle);
+
+    glBindTexture(GL_TEXTURE_2D, handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 720, 480, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
+
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
     _program = new Shader("../Shaders/vertexshader.glsl","../Shaders/fragmentshader.glsl");
@@ -407,8 +419,8 @@ void OpenGLWidget::initializeGL()
     glBufferData(GL_ARRAY_BUFFER,6*sizeof(float),
                  screenFillingTri.vertices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindVertexArray(0);
 
@@ -419,6 +431,7 @@ void OpenGLWidget::initializeGL()
 
 void OpenGLWidget::draw()
 {
+
     updateScene();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -427,36 +440,48 @@ void OpenGLWidget::draw()
     /////////////////////
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
-        _imageProgram->bind();
+
 
         if(getSceneType() == TYPE_VIDEO && isPlaying){
             _frame++;
         }
+//        _imageProgram->bind();
+//        glBindVertexArray(screenFillingTri.vao);
+//        glActiveTexture(GL_TEXTURE0);
+//        glUniform1i(screenFillingTri.texLoc,0);
+//        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
 
-        glBindVertexArray(screenFillingTri.vao);
-        glActiveTexture(GL_TEXTURE0);
-        glUniform1i(screenFillingTri.texLoc,0);
-        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
+//        glDrawArrays(GL_TRIANGLES,0,3);
 
-        glDrawArrays(GL_TRIANGLES,0,3);
+//        glBindVertexArray(0);
+//        glBindTexture(GL_TEXTURE_2D,0);
 
-        glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D,0);
-
-        _imageProgram->unbind();
+//        _imageProgram->unbind();
 
 
         /////////////////////
         // Draw Sobelfilter//
         /////////////////////
 
+        //FBO to save the sobeltexture
+
+        glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
+
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, handle, 0);
+        GLenum drawBufferHandle[1] = {GL_COLOR_ATTACHMENT0};
+        glDrawBuffers(1, drawBufferHandle);
 
         _sobelProgram->bind();
+        // Render to our framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
+        glViewport(0,0,720,480);
 
         glBindVertexArray(screenFillingTri.vao);
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(screenFillingTri.texLoc,0);
         glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
+
 
         glDrawArrays(GL_TRIANGLES,0,3);
 
@@ -464,11 +489,12 @@ void OpenGLWidget::draw()
         glBindTexture(GL_TEXTURE_2D,0);
 
         _sobelProgram->unbind();
+
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
 
-       //renderObj.genImg();
-
+        //shows the rendered texture if true
+        if(true){
         //Bild zum Vergleich wird erstellt
         cv::Mat img(480, 720, CV_8UC3);
 
@@ -480,19 +506,38 @@ void OpenGLWidget::draw()
         glReadPixels(0, 0, img.cols, img.rows, GL_BGR, GL_UNSIGNED_BYTE, img.data);
 
         //muss geflippt werden, da opencv images von top to bottom speichert
+        //ist aber zum zählen unrelevant
         cv::flip(img, img, 0);
 
         cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);// Create a window for display.
         cv::imshow( "Display window", img );       // Show our image inside it.
         //how to work with the pixelinformation
         //flipped.at<cv::vec3b>(x,y);
+        }
 
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     ///////////////////////////
     // Draw Geometry Particle//
     ///////////////////////////
 
 
-        renderObj.renderMeshes(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, fbo);
+        renderObj.renderMeshes(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, fbo, pixelCounter,handle);
+
+//        _program->bind();
+
+//        m = mesh->computeModelMatrix();
+//        v = camera.getViewMatrix();
+
+//        glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
+//        glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
+//        glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
+
+//        glm::vec3 cameraPos = camera.center();
+
+//        if(mesh != nullptr)
+//            mesh->draw(&cameraPos);
+
+//        _program->unbind();
 
 
     if(getSceneType() == TYPE_VIDEO && isPlaying){

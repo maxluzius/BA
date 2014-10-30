@@ -56,11 +56,7 @@ void OpenGLWidget::setCameraPose(float centerX, float centerY, float centerZ,
     camera.setLookAt(glm::vec3(lookAtX,lookAtY,lookAtZ));
     camera.setUp(glm::vec3(upX,upY,upZ));
 
-//    float transX = mesh->getTranslate().x;
-//    float transY = mesh->getTranslate().y;
-//    float transZ = mesh->getTranslate().z;
-//    camPartikel.print(transX, transY, transZ);
-    camPartikel.initParticle(camera);  //Partikelerzeugung
+    //camPartikel.initParticle(camera);  //Partikelerzeugung
 }
 
 void OpenGLWidget::setProjection(float fov, float nearPlane, float farPlane, bool isPerspective)
@@ -202,6 +198,7 @@ void OpenGLWidget::initScene()
     timer->start(1.0f / _fpsVideo * 1000.f);
 
     camera.init();
+
 }
 
 void OpenGLWidget::incFrame()
@@ -323,6 +320,7 @@ void OpenGLWidget::updateTex()
 
 void OpenGLWidget::nextFrame()
 {
+    camPartikel.initParticle(camera);  //Partikelerzeugung
     if(sceneType == TYPE_VIDEO)
         *img = videoMats[_frame];
 }
@@ -393,9 +391,12 @@ void OpenGLWidget::initializeGL()
     _program = new Shader("../Shaders/vertexshader.glsl","../Shaders/fragmentshader.glsl");
     _imageProgram = new Shader("../Shaders/screenFillingTriVert.glsl","../Shaders/showImageFrag.glsl");
     _sobelProgram = new Shader("../Shaders/vertexSobel.glsl","../Shaders/fragmentSobel.glsl");
+    _meshProgram = new Shader("../Shaders/vertexshaderMesh.glsl","../Shaders/fragmentshaderMesh.glsl");
+    _thinningProgram = new Shader("../Shaders/vertexThinning.glsl","../Shaders/fragmentThinning.glsl");
 
     screenFillingTri.texLoc = glGetUniformLocation(_imageProgram->id(),"tex");
     screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
+
     mLoc = glGetUniformLocation(_program->id(),"M");
     vLoc = glGetUniformLocation(_program->id(),"V");
     pLoc = glGetUniformLocation(_program->id(),"P");
@@ -490,6 +491,24 @@ void OpenGLWidget::draw()
 
         _sobelProgram->unbind();
 
+//            screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
+
+//        _thinningProgram->bind();
+
+
+//        glBindVertexArray(screenFillingTri.vao);
+//        glActiveTexture(GL_TEXTURE0);
+//        glUniform1i(screenFillingTri.texLoc,0);
+//        glBindTexture(GL_TEXTURE_2D,handle);
+
+
+//        glDrawArrays(GL_TRIANGLES,0,3);
+
+//        glBindVertexArray(0);
+//        glBindTexture(GL_TEXTURE_2D,0);
+
+//        _thinningProgram->unbind();
+
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
 
@@ -521,7 +540,7 @@ void OpenGLWidget::draw()
     ///////////////////////////
 
 
-        renderObj.renderMeshes(camera, mesh, camPartikel,_program, m, v, p, mLoc, vLoc, pLoc, fbo, pixelCounter,handle);
+        renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle);
 
 //        _program->bind();
 

@@ -13,7 +13,10 @@ void main(){
 	pos.y = pos.y / position.w;
 	pos.x = (pos.x + 1.0) / 2.0;
 	pos.y = (pos.y + 1.0) / 2.0;
-	//pos.z = 0.0;
+
    vec3 color = texture2D(tex, pos.xy).xyz;
+  
+
+
     fragmentColor = vec3(color.xy, 0.0);
 }

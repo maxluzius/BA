@@ -6,6 +6,7 @@ layout (location = 0) in vec3 in_Position;
 uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
+uniform sampler2D tex;
 
 varying vec4 position;
 	
@@ -15,5 +16,16 @@ void main() {
 	
 	position = P * V * M * vec4(in_Position,1);
 
+		vec3 pos = position.xyz;
+	pos.x = pos.x / position.w;
+	pos.y = pos.y / position.w;
+	pos.x = (pos.x + 1.0) / 2.0;
+	pos.y = (pos.y + 1.0) / 2.0;
+
+   vec3 color = texture2D(tex, pos.xy).xyz;
+
+   if(color.x == 0.0)
+   	gl_Position = vec4(position.xy, -100.0, position.w);
+   else
 	gl_Position = P * V * M * vec4(in_Position,1);
 }

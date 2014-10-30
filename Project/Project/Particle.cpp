@@ -8,7 +8,7 @@
 particle::particle()
 {
     dim = 3;
-    nParticles = 3;
+    nParticles = 5;
 }
 
 
@@ -87,7 +87,7 @@ void particle::genParticles(glm::vec3 particleV)
 
     particleCenterM.setTo(cv::Scalar(0));
     //Bereich der Partikelstreuung
-    setRanges(particleV.x, particleV.y, particleV.z, 10.0);
+    setRanges(particleV.x, particleV.y, particleV.z, 2.0);
 
     CvMat LB, UB;
     cvInitMatHeader(&LB, 3, 1, CV_32FC1, minRange);
@@ -144,7 +144,7 @@ void particle::genParticles(glm::vec3 particleV)
 void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt, int j)
 {
     //Bereich der Partikelstreuung
-    setRanges(particleV.x, particleV.y, particleV.z, 5.0);
+    setRanges(particleV.x, particleV.y, particleV.z, 1.0);
 
     CvMat LB, UB;
     cvInitMatHeader(&LB, 3, 1, CV_32FC1, minRange);

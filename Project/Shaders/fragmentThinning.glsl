@@ -41,21 +41,18 @@ void main() {
     float grayib = (ib.r + ib.g + ib.b) / 3.0;
     float grayit = (it.r + it.g + it.b) / 3.0;
 
-    //in y Richtung
-    float h = grayitl + 2.0 * grayit + grayitr - grayibl - 2.0 * grayib - grayibr;
-    //in x Richtung
-    float v = grayibl + 2.0 * grayil + grayitl - grayibr - 2.0 * grayir - grayitr;
+    if(grayi > grayibl){grayi = grayibl; i = ibl;}
+    if(grayi > grayitr){grayi = grayitr; i = itr;}
+    if(grayi > grayitl){grayi = grayitl; i = itl;}
+    if(grayi > grayibr){grayi = grayibr; i = ibr;}
+    if(grayi > grayil){grayi = grayil; i = il;}
+    if(grayi > grayir){grayi = grayir; i = ir;}
+    if(grayi > grayib){grayi = grayib; i = ib;}
+    if(grayi > grayit){grayi = grayit; i = it;}
 
-    float gradientMagnitude = sqrt(h * h + v * v);
-    float gradientDirection = atan(h,v);
-    if(gradientMagnitude <= 0.5)
-        fragmentColor = vec3(0.0);
-    else{
-    fragmentColor = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
+    fragmentColor = i;
     //color for the texture we are writing to
-    color = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
-    //fragmentColor = vec3(textureCoordinate, 0.0);
-    //color = vec3(textureCoordinate,0.0);
-    }
+    color = i;
+    
 }
 

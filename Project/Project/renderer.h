@@ -39,7 +39,7 @@ public:
     renderer();
     void sobel();
     void rendern(Mesh* mesh);
-    void renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, int pixelCounter,GLuint handle);
+    void renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, GLuint handle);
     cv::Mat genImg();
     int count(cv::Mat img);
     void likelihood(int videoCount, int particleCount);
@@ -52,7 +52,12 @@ private:
     GLuint texLoc;
     int pixelCounterMesh;
     int maxLikelihood;
-    GLuint PixelCount;
+    GLuint PixelCountSet;
+    GLuint PixelCountAll;
+    float max;
+    int numberPos;
+    int numberLookAt;
+    float relVal;
 
 };
 

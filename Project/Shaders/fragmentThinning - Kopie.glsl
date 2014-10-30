@@ -31,31 +31,23 @@ void main() {
     vec3 ib = texture(tex, bottomTextureCoordinate).xyz;
     vec3 it = texture(tex, topTextureCoordinate).xyz;
 
-    float grayi = (i.r + i.g + i.b) / 3.0;
-    float grayibl = (ibl.r + ibl.g + ibl.b) / 3.0;
-    float grayitr = (itr.r + itr.g + itr.b) / 3.0;
-    float grayitl = (itl.r + itl.g + itl.b) / 3.0;
-    float grayibr = (ibr.r + ibr.g + ibr.b) / 3.0;
-    float grayil = (il.r + il.g + il.b) / 3.0;
-    float grayir = (ir.r + ir.g + ir.b) / 3.0;
-    float grayib = (ib.r + ib.g + ib.b) / 3.0;
-    float grayit = (it.r + it.g + it.b) / 3.0;
+    float max = ibl.y;
+    vec3 direction = ibl;
+    if(itr.y > max){max = itr.y; direction = itr;}
+    if(itl.y > max){max = itl.y; direction = itl;}
+    if(ibr.y > max){max = ibr.y; direction = ibr;}
+    if(il.y > max){max = il.y; direction = il;}
+    if(ir.y > max){max = ir.y; direction = ir;}
+    if(ib.y > max){max = ib.y; direction = ib;}
+    if(it.y > max){max = it.y; direction = it;}
+        
 
-    //in y Richtung
-    float h = grayitl + 2.0 * grayit + grayitr - grayibl - 2.0 * grayib - grayibr;
-    //in x Richtung
-    float v = grayibl + 2.0 * grayil + grayitl - grayibr - 2.0 * grayir - grayitr;
-
-    float gradientMagnitude = sqrt(h * h + v * v);
-    float gradientDirection = atan(h,v);
-    if(gradientMagnitude <= 0.5)
+    if(i.x < direction.x)
         fragmentColor = vec3(0.0);
     else{
-    fragmentColor = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
+    fragmentColor = vec3(i.x, i.y, 0.0);
     //color for the texture we are writing to
-    color = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
-    //fragmentColor = vec3(textureCoordinate, 0.0);
-    //color = vec3(textureCoordinate,0.0);
+    color = vec3(i.x, i.y, 0.0);
     }
 }
 

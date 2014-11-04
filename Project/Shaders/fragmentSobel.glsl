@@ -51,11 +51,9 @@ void main() {
     if(gradientMagnitude <= 0.5)
         fragmentColor = vec3(0.0);
     else{
-    fragmentColor = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
+    fragmentColor = normalize(vec3(gradientMagnitude, 0.0, 0.0));
     //color for the texture we are writing to
-    color = normalize(vec3(gradientMagnitude, gradientDirection, 0.0));
-    //fragmentColor = vec3(textureCoordinate, 0.0);
-    //color = vec3(textureCoordinate,0.0);
+    color = normalize(vec3(gradientMagnitude, 0.0, 0.0));
     }
 }
 

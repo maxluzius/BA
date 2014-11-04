@@ -6,34 +6,14 @@ renderer::renderer()
 
 int renderer::count(cv::Mat img){
     int count = 0;
-    for (int x = 0; x < 720; ++x) {
-        for (int y = 0; y < 480; ++y) {
+    for (int x = 0; x < 1280; ++x) {
+        for (int y = 0; y < 720; ++y) {
             uchar color = img.at<uchar>(y, x);
             if((int)color == 255)
                count++;
         }
     }
     return count;
-}
-
-cv::Mat renderer::genImg(){
-    //Bild zum Vergleich wird erstellt
-    cv::Mat img(480, 720, CV_8UC3);
-
-    //use fast 4-byte alignment (default anyway) if possible
-    glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
-    //set length of one complete row in destination data (doesn't need to equal img.cols)
-    glPixelStorei(GL_PACK_ROW_LENGTH, img.step/img.elemSize());
-    //Pixel werden ausgelesen und im img gespeichert
-    glReadPixels(0, 0, 720, 480, GL_BGR, GL_UNSIGNED_BYTE, img.data);
-
-    //muss geflippt werden, da opencv images von top to bottom speichert
-    cv::flip(img, img, 0);
-
-    //cv::namedWindow( "Meshes", cv::WINDOW_AUTOSIZE);// Create a window for display.
-    //cv::imshow( "Meshes", img );       // Show our image inside it.
-
-    return img;
 }
 
 void renderer::likelihood(int videoCount, int particleCount){
@@ -151,14 +131,11 @@ void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Sha
             }
             cout << PixelCountSet << "/" << PixelCountAll << "/" << relVal << endl;
             glDeleteQueries(2, QueryID);
-            //  ------------------------- hierdurch werden die gerenderten boxen erst sichtbar
-            //glBindTexture(GL_TEXTURE_2D, fbo->texture());
-            //cout << i * centerMat.rows + j << endl;
 
-            //hier müsste der sobelfilter angewendet und das bild ausgelesen werden.
             glDeleteLists(pbufferList[0],2);
         }
     }
+    if(max >= bestRelVal){
     cameraPos.x = centerMat(numberPos,0);
     cameraPos.y = centerMat(numberPos,1);
     cameraPos.z = centerMat(numberPos,2);
@@ -168,22 +145,7 @@ void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Sha
     cameraLookAt.y = lookAtMat(numberLookAt, 1);
     cameraLookAt.z = lookAtMat(numberLookAt, 2);
     camera.setLookAt(cameraLookAt);
-
-            _meshProgram->bind();
-
-            m = mesh->computeModelMatrix();
-            v = camera.getViewMatrix();
-
-            glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
-            glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
-            glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
-
-            glm::vec3 cameraPos = camera.center();
-
-            if(mesh != nullptr)
-                mesh->draw(&cameraPos);
-
-            _meshProgram->unbind();
+    }
 }
 
 void renderer::rendern(Mesh* mesh){

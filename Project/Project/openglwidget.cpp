@@ -380,7 +380,7 @@ void OpenGLWidget::initializeGL()
     glGenTextures(1, &handle);
 
     glBindTexture(GL_TEXTURE_2D, handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 720, 480, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 1280, 720, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -446,18 +446,6 @@ void OpenGLWidget::draw()
         if(getSceneType() == TYPE_VIDEO && isPlaying){
             _frame++;
         }
-//        _imageProgram->bind();
-//        glBindVertexArray(screenFillingTri.vao);
-//        glActiveTexture(GL_TEXTURE0);
-//        glUniform1i(screenFillingTri.texLoc,0);
-//        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
-
-//        glDrawArrays(GL_TRIANGLES,0,3);
-
-//        glBindVertexArray(0);
-//        glBindTexture(GL_TEXTURE_2D,0);
-
-//        _imageProgram->unbind();
 
 
         /////////////////////
@@ -476,7 +464,7 @@ void OpenGLWidget::draw()
         _sobelProgram->bind();
         // Render to our framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
-        glViewport(0,0,720,480);
+        glViewport(0,0,1280,720);
 
         glBindVertexArray(screenFillingTri.vao);
         glActiveTexture(GL_TEXTURE0);
@@ -491,31 +479,31 @@ void OpenGLWidget::draw()
 
         _sobelProgram->unbind();
 
-//            screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
+            screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
 
-//        _thinningProgram->bind();
-
-
-//        glBindVertexArray(screenFillingTri.vao);
-//        glActiveTexture(GL_TEXTURE0);
-//        glUniform1i(screenFillingTri.texLoc,0);
-//        glBindTexture(GL_TEXTURE_2D,handle);
+        _thinningProgram->bind();
 
 
-//        glDrawArrays(GL_TRIANGLES,0,3);
+        glBindVertexArray(screenFillingTri.vao);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(screenFillingTri.texLoc,0);
+        glBindTexture(GL_TEXTURE_2D,handle);
 
-//        glBindVertexArray(0);
-//        glBindTexture(GL_TEXTURE_2D,0);
 
-//        _thinningProgram->unbind();
+        glDrawArrays(GL_TRIANGLES,0,3);
+
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        _thinningProgram->unbind();
 
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
 
         //shows the rendered texture if true
-        if(true){
+        if(false){
         //Bild zum Vergleich wird erstellt
-        cv::Mat img(480, 720, CV_8UC3);
+        cv::Mat img(720, 1280, CV_8UC3);
 
         //use fast 4-byte alignment (default anyway) if possible
         glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
@@ -540,23 +528,50 @@ void OpenGLWidget::draw()
     ///////////////////////////
 
 
-        renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle);
+        //renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle);
 
-//        _program->bind();
+        ////////////////////
+        // Draw Background//
+        ////////////////////
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
 
-//        m = mesh->computeModelMatrix();
-//        v = camera.getViewMatrix();
+        _imageProgram->bind();
 
-//        glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
-//        glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
-//        glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
+        glBindVertexArray(screenFillingTri.vao);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(screenFillingTri.texLoc,0);
+        glBindTexture(GL_TEXTURE_2D,screenFillingTri.texID);
 
-//        glm::vec3 cameraPos = camera.center();
+        glDrawArrays(GL_TRIANGLES,0,3);
 
-//        if(mesh != nullptr)
-//            mesh->draw(&cameraPos);
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D,0);
 
-//        _program->unbind();
+        _imageProgram->unbind();
+
+
+        //////////////////////
+        // Draw Meshposition//
+        //////////////////////
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+
+        _meshProgram->bind();
+
+        m = mesh->computeModelMatrix();
+        v = camera.getViewMatrix();
+
+        glUniformMatrix4fv(mLoc,1,GL_FALSE,glm::value_ptr(m));
+        glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
+        glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
+
+        glm::vec3 cameraPos = camera.center();
+
+        if(mesh != nullptr)
+            mesh->draw(&cameraPos);
+
+        _meshProgram->unbind();
 
 
     if(getSceneType() == TYPE_VIDEO && isPlaying){

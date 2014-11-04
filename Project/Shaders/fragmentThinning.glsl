@@ -31,28 +31,36 @@ void main() {
     vec3 ib = texture(tex, bottomTextureCoordinate).xyz;
     vec3 it = texture(tex, topTextureCoordinate).xyz;
 
-    float grayi = (i.r + i.g + i.b) / 3.0;
-    float grayibl = (ibl.r + ibl.g + ibl.b) / 3.0;
-    float grayitr = (itr.r + itr.g + itr.b) / 3.0;
-    float grayitl = (itl.r + itl.g + itl.b) / 3.0;
-    float grayibr = (ibr.r + ibr.g + ibr.b) / 3.0;
-    float grayil = (il.r + il.g + il.b) / 3.0;
-    float grayir = (ir.r + ir.g + ir.b) / 3.0;
-    float grayib = (ib.r + ib.g + ib.b) / 3.0;
-    float grayit = (it.r + it.g + it.b) / 3.0;
-
-    if(grayi > grayibl){grayi = grayibl; i = ibl;}
-    if(grayi > grayitr){grayi = grayitr; i = itr;}
-    if(grayi > grayitl){grayi = grayitl; i = itl;}
-    if(grayi > grayibr){grayi = grayibr; i = ibr;}
-    if(grayi > grayil){grayi = grayil; i = il;}
-    if(grayi > grayir){grayi = grayir; i = ir;}
-    if(grayi > grayib){grayi = grayib; i = ib;}
-    if(grayi > grayit){grayi = grayit; i = it;}
-
-    fragmentColor = i;
-    //color for the texture we are writing to
-    color = i;
-    
+    if(i.y < 0.125 || (i.y <=1.0 && i.y >= 0.875)){
+        if(i.x >= ib.x && i.x >= it.x){
+            fragmentColor = vec3(i.x, i.y, 0.0);
+            //color for the texture we are writing to
+            color = vec3(i.x, i.y, 0.0);
+        }
+    }
+    if(i.y < 0.375 && i.y >= 0.125){
+        if(i.x >= ibr.x && i.x >= itl.x){
+            fragmentColor = vec3(i.x, i.y, 0.0);
+            //color for the texture we are writing to
+            color = vec3(i.x, i.y, 0.0);
+        }
+    }
+    if(i.y < 0.625 && i.y >= 0.375){
+        if(i.x >= il.x && i.x >= ir.x){
+            fragmentColor = vec3(i.x, i.y, 0.0);
+            //color for the texture we are writing to
+            color = vec3(i.x, i.y, 0.0);
+        }
+    }
+    if(i.y < 0.875 && i.y >= 0.625){
+        if(i.x >= ib.x && i.x >= it.x){
+            fragmentColor = vec3(i.x, i.y, 0.0);
+            //color for the texture we are writing to
+            color = vec3(i.x, i.y, 0.0);
+        }
+    }
+    else{
+        fragmentColor = vec3(0.0);
+    }
 }
 

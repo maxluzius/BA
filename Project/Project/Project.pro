@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     editobjectwidget.cpp \
     Particle.cpp \
     renderer.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    cameracalibration.cpp
 
 HEADERS  += \
     openglwidget.h \
@@ -39,7 +40,8 @@ HEADERS  += \
     line3d.h \
     Particle.h \
     renderer.h \
-    glwidget.h
+    glwidget.h \
+    cameracalibration.h
 
 FORMS    += \
     mainwindow.ui \

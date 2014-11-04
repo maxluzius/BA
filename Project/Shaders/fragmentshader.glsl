@@ -17,6 +17,5 @@ void main(){
    vec3 color = texture2D(tex, pos.xy).xyz;
   
 
-
-    fragmentColor = vec3(color.xy, 0.0);
+    fragmentColor = vec3(color.x,0.0, 0.0);
 }

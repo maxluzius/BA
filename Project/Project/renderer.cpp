@@ -6,8 +6,8 @@ renderer::renderer()
 
 int renderer::count(cv::Mat img){
     int count = 0;
-    for (int x = 0; x < 1280; ++x) {
-        for (int y = 0; y < 720; ++y) {
+    for (int x = 0; x < 720; ++x) {
+        for (int y = 0; y < 480; ++y) {
             uchar color = img.at<uchar>(y, x);
             if((int)color == 255)
                count++;

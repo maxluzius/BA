@@ -31,35 +31,14 @@ void main() {
     vec3 ib = texture(tex, bottomTextureCoordinate).xyz;
     vec3 it = texture(tex, topTextureCoordinate).xyz;
 
-    if(i.y < 0.125 || (i.y <=1.0 && i.y >= 0.875)){
-        if(i.x >= ib.x && i.x >= it.x){
-            fragmentColor = vec3(i.x, i.y, 0.0);
+    if(ibl.x  == 1.0 || itr.x == 1.0 || itl.x == 1.0 || ibr.x == 1.0 ||
+        il.x == 1.0 || ir.x == 1.0 || ib.x == 1.0 || it.x == 1.0){
+            fragmentColor = vec3(1.0, 0.0, 0.0);
             //color for the texture we are writing to
-            color = vec3(i.x, i.y, 0.0);
+            color = vec3(1.0, 0.0, 0.0);
         }
-    }
-    if(i.y < 0.375 && i.y >= 0.125){
-        if(i.x >= ibr.x && i.x >= itl.x){
-            fragmentColor = vec3(i.x, i.y, 0.0);
-            //color for the texture we are writing to
-            color = vec3(i.x, i.y, 0.0);
-        }
-    }
-    if(i.y < 0.625 && i.y >= 0.375){
-        if(i.x >= il.x && i.x >= ir.x){
-            fragmentColor = vec3(i.x, i.y, 0.0);
-            //color for the texture we are writing to
-            color = vec3(i.x, i.y, 0.0);
-        }
-    }
-    if(i.y < 0.875 && i.y >= 0.625){
-        if(i.x >= ib.x && i.x >= it.x){
-            fragmentColor = vec3(i.x, i.y, 0.0);
-            //color for the texture we are writing to
-            color = vec3(i.x, i.y, 0.0);
-        }
-    }
     else{
+        color = vec3(0.0, 0.0, 0.0);
         fragmentColor = vec3(0.0);
     }
 }

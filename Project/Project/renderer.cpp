@@ -22,7 +22,7 @@ void renderer::likelihood(int videoCount, int particleCount){
         maxLikelihood = compare;
 }
 
-void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, GLuint handle){
+void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, GLuint handle, float &relMaxValue, glm::vec3 &newCenter, glm::vec3 &newLookAt){
 
     max = 0.0;
     numberPos = 0;
@@ -88,7 +88,7 @@ void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Sha
                 glUniformMatrix4fv(vLoc,1,GL_FALSE,glm::value_ptr(v));
                 glUniformMatrix4fv(pLoc,1,GL_FALSE,glm::value_ptr(p));
 
-                glm::vec3 cameraPos = camera.center();
+                cameraPos = camera.center();
 
                 if(mesh != nullptr)
                     mesh->draw(&cameraPos);
@@ -126,26 +126,28 @@ void renderer::renderMeshes(Camera &camera,Mesh* mesh, particle camPartikel, Sha
             relVal = PixelCountSet/(float)PixelCountAll;
             if(relVal > max){
                 max = relVal;
-                numberPos = i;
-                numberLookAt = i * centerMat.rows + j;
+                if(max >= (relMaxValue - 0.1)){
+                    relMaxValue = max;
+                    newCenter.x = centerMat(i,0);
+                    newCenter.y = centerMat(i,1);
+                    newCenter.z = centerMat(i,2);
+                    newLookAt.x = lookAtMat(i * centerMat.rows + j, 0);
+                    newLookAt.y = lookAtMat(i * centerMat.rows + j, 1);
+                    newLookAt.z = lookAtMat(i * centerMat.rows + j, 2);
+                    cout << relVal << "/" << max << "/" << relMaxValue << endl;
+                }
             }
-            cout << PixelCountSet << "/" << PixelCountAll << "/" << relVal << endl;
+            //cout << relVal << "/" << max << "/" << relMaxValue << endl;
             glDeleteQueries(2, QueryID);
 
             glDeleteLists(pbufferList[0],2);
         }
     }
-    if(max >= bestRelVal){
-    cameraPos.x = centerMat(numberPos,0);
-    cameraPos.y = centerMat(numberPos,1);
-    cameraPos.z = centerMat(numberPos,2);
-    camera.setCenter(cameraPos);
+    camera.setCenter(newCenter);
+    camera.setLookAt(newLookAt);
 
-    cameraLookAt.x = lookAtMat(numberLookAt, 0);
-    cameraLookAt.y = lookAtMat(numberLookAt, 1);
-    cameraLookAt.z = lookAtMat(numberLookAt, 2);
-    camera.setLookAt(cameraLookAt);
-    }
+
+
 }
 
 void renderer::rendern(Mesh* mesh){

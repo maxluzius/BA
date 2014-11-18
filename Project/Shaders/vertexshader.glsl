@@ -16,7 +16,8 @@ void main() {
 	
 	position = P * V * M * vec4(in_Position,1);
 
-		vec3 pos = position.xyz;
+	vec3 pos = position.xyz;
+	
 	pos.x = pos.x / position.w;
 	pos.y = pos.y / position.w;
 	pos.x = (pos.x + 1.0) / 2.0;
@@ -25,6 +26,7 @@ void main() {
    vec3 color = texture2D(tex, pos.xy).xyz;
 
    if(color.x == 0.0)
+   	//hier wird bei nicht gesetzter Farbe das Pixel aus dem FOV gerendert
    	gl_Position = vec4(position.xy, -100.0, position.w);
    else
 	gl_Position = P * V * M * vec4(in_Position,1);

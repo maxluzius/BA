@@ -25,6 +25,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) :
     _fov(60.0f)
 {
     _aspect = width() / height();
+    relMaxValue = 0.0;
 
     QGLFormat format;
     setFormat(format);
@@ -166,7 +167,9 @@ void OpenGLWidget::initScene()
             if(!video.read(videoMats[i]))
                 break;
          }
+
     }
+
     initGLTexture();
     nextFrame();
     updateTex();
@@ -321,6 +324,13 @@ void OpenGLWidget::updateTex()
 void OpenGLWidget::nextFrame()
 {
     camPartikel.initParticle(camera);  //Partikelerzeugung
+//    ///////////////////////////Frame Vorverarbeitung//////////////////////////////////////
+//            input = videoMats[_frame];
+//            cv::medianBlur(input, out, 3);
+//            //cv::namedWindow( "Gaus", cv::WINDOW_AUTOSIZE);// Create a window for display.
+//            //cv::imshow( "Gaus", out );       // Show our image inside it.
+//            videoMats[_frame] = out;
+//    ///////////////////////////////////////////////////////////////////////////////////////
     if(sceneType == TYPE_VIDEO)
         *img = videoMats[_frame];
 }
@@ -393,8 +403,10 @@ void OpenGLWidget::initializeGL()
     _sobelProgram = new Shader("../Shaders/vertexSobel.glsl","../Shaders/fragmentSobel.glsl");
     _meshProgram = new Shader("../Shaders/vertexshaderMesh.glsl","../Shaders/fragmentshaderMesh.glsl");
     _thinningProgram = new Shader("../Shaders/vertexThinning.glsl","../Shaders/fragmentThinning.glsl");
+    _medianProgram = new Shader("../Shaders/vertexMedian.glsl","../Shaders/fragmentMedian.glsl");
 
     screenFillingTri.texLoc = glGetUniformLocation(_imageProgram->id(),"tex");
+    screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
     screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
 
     mLoc = glGetUniformLocation(_program->id(),"M");
@@ -442,15 +454,9 @@ void OpenGLWidget::draw()
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
 
-
         if(getSceneType() == TYPE_VIDEO && isPlaying){
             _frame++;
         }
-
-
-        /////////////////////
-        // Draw Sobelfilter//
-        /////////////////////
 
         //FBO to save the sobeltexture
 
@@ -461,7 +467,12 @@ void OpenGLWidget::draw()
         GLenum drawBufferHandle[1] = {GL_COLOR_ATTACHMENT0};
         glDrawBuffers(1, drawBufferHandle);
 
-        _sobelProgram->bind();
+        //////////////////////
+        // Draw Medianfilter//
+        //////////////////////
+
+        _medianProgram->bind();
+
         // Render to our framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
         glViewport(0,0,720,480);
@@ -477,9 +488,31 @@ void OpenGLWidget::draw()
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D,0);
 
+        _medianProgram->unbind();
+
+        screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
+
+        /////////////////////
+        // Draw Sobelfilter//
+        /////////////////////
+
+
+        _sobelProgram->bind();
+
+        glBindVertexArray(screenFillingTri.vao);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(screenFillingTri.texLoc,0);
+        glBindTexture(GL_TEXTURE_2D,handle);
+
+
+        glDrawArrays(GL_TRIANGLES,0,3);
+
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D,0);
+
         _sobelProgram->unbind();
 
-            screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
+        screenFillingTri.texLoc = glGetUniformLocation(handle,"tex");
 
 //        _thinningProgram->bind();
 
@@ -528,7 +561,7 @@ void OpenGLWidget::draw()
     ///////////////////////////
 
 
-        renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle);
+        renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle, relMaxValue, newCenter, newLookAt);
 
         ////////////////////
         // Draw Background//

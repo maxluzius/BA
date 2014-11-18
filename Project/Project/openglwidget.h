@@ -255,7 +255,9 @@ private:
     renderer renderObj;
     cv::Point2i loop;
     GLuint pbufferList;
-    int pixelCounter;
+    float relMaxValue;
+    glm::vec3 newCenter;
+    glm::vec3 newLookAt;
     GLuint framebufferHandle;
     GLuint handle;
 
@@ -271,6 +273,7 @@ private:
     Shader* _sobelProgram; ///< Shader program for sobel filtering
     Shader* _meshProgram; ///< Shader program for the teaboxmesh
     Shader* _thinningProgram; ///< Shader program for thinning
+    Shader* _medianProgram; ///< Shader program for blur
 
     int sceneType; ///< the type of the scene TYPE_IMAGE or TYPE_VIDEO
     std::string filename; ///< the filename of the scene
@@ -311,7 +314,8 @@ private:
     cv::Mat* img; ///< The image (or current frame)
     cv::VideoCapture video; ///< Video caputre - if any
     QImage qframe; ///< Frame of Qt used to transform image data in an OpenGL Texture
-
+    cv::Mat input;
+    cv::Mat out;
     /**
      * @brief Creates and initializes a texture for OpenGL
      */

@@ -1,0 +1,27 @@
+\select@language {ngerman}
+\contentsline {section}{\numberline {1}Einleitung}{1}
+\contentsline {subsection}{\numberline {1.1}Aufbau der Arbeit}{1}
+\contentsline {subsection}{\numberline {1.2}Stand der Technik}{2}
+\contentsline {subsection}{\numberline {1.3}Markerbasiertes Tracking}{2}
+\contentsline {subsection}{\numberline {1.4}Markerloses/Modellbasiertes Tracking}{2}
+\contentsline {subsection}{\numberline {1.5}Kantenbasierte Bildvergleiche?}{3}
+\contentsline {section}{\numberline {2}Grundlagen}{3}
+\contentsline {subsection}{\numberline {2.1}Analyse durch Synthese}{3}
+\contentsline {subsection}{\numberline {2.2}Partikelfilter}{4}
+\contentsline {subsection}{\numberline {2.3}Sobelfilter}{4}
+\contentsline {section}{\numberline {3}Implementierung}{4}
+\contentsline {subsection}{\numberline {3.1}Software/Hardware}{4}
+\contentsline {subsection}{\numberline {3.2}Bibliotheken}{5}
+\contentsline {subsection}{\numberline {3.3}Anforderungen}{6}
+\contentsline {subsection}{\numberline {3.4}Umsetzungsansatz}{6}
+\contentsline {subsection}{\numberline {3.5}Details der Implementierung}{6}
+\contentsline {section}{\numberline {4}Ergebnisse}{6}
+\contentsline {subsection}{\numberline {4.1}GUI? ist ja nicht von mir}{6}
+\contentsline {subsection}{\numberline {4.2}Performance}{6}
+\contentsline {section}{\numberline {5}Ausblick und Fazit}{6}
+\contentsline {subsection}{\numberline {5.1}Verbesserungen}{6}
+\contentsline {subsection}{\numberline {5.2}Fazit}{6}
+\contentsline {section}{\numberline {6}Anhang}{6}
+\contentsline {section}{\numberline {7}Fragen}{6}
+\contentsline {subsection}{\numberline {7.1}1.1}{6}
+\contentsline {subsection}{\numberline {7.2}1.2}{7}

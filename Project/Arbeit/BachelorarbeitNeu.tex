@@ -1,0 +1,158 @@
+\documentclass[m,intern,palatino]{cgBA}
+\author{Maximilian Luzius}
+\title{Markerloses Tracking mithilfe Analyse durch Synthese auf Basis eines Partikelfilters}
+\zweitgutachter{Anna Katharina Hebborn, M.Sc.}
+\zweitgutachterInfo{(Institut für Computervisualistik, AG Computergraphik)}
+%\externLogo{3cm}{logos/UniLogoNeu}
+\externName{Computervisualistik}
+
+\begin{document}
+
+% Umschalten der Sprache (für englische Rubrikbezeichnungen etc.)
+%\selectlanguage{english}
+
+
+\maketitle
+
+\pagenumbering{roman}
+\newpage
+\tableofcontents
+\clearpage         % oder \cleardoublepage bei zweiseitigem Druck
+% \listoffigures   % fuer ein eventuelles Abbildungsverzeichnis
+% \clearpage
+\pagenumbering{arabic}
+
+% Hier kommt jetzt der eigentliche Text der Arbeit
+
+\section{Einleitung}
+
+Im Bereich der Augmented Reality(kurz AR) weißt Tracking, besonders markerloses Tracking, eine der größten Schwierigkeiten auf. Unter Augmented Reality wird verstanden, dass ein Kamerabild durch synthetische Informationen in Echtzeit überlagert oder auch ergänzt wird, so dass die Realität erweitert wird. Damit diese synthetischen Informationen an den richtigen Stellen eingeblendet werden können, muss aus der Sicht der realen Welt bestimmt werden, wo sich die Kamera befindet(Position) und wo sie hin blickt(Orientierung), die sogenannte Kamerapose. Im Bereich der AR gibt es zwei Herangehensweisen, die in markerloses und markerbasiertes Tracking unterteilt werden, jedoch meist beide nur in speziell vorgesehenen Bereichen funktionieren. Außerdem werden diese häufig durch 3D-Modelle der Umgebung und der Objekte unterstützt. Beim zweiten Verfahren werden in die reale Welt Marker(Bit-Codes z.B. QR-Code) eingefügt, so dass deren Position und Größe bekannt ist und diese von der Kamera erkannt werden können und folglich die Kamerapose zurückgerechnet werden kann. Das Problem dieses Verfahrens sind die Marker, welche vorher in der Welt angebracht werden und in dieser auch gut sichtbar sein müssen. Somit wird das markerlose Trackingverfahren immer wichtiger und sollte, soweit möglich das markerbasierte ersetzen. Da dieses Trackingverfahren für die Arbeit von Bedeutung ist, werden dessen Grundlagen in gleichnamigen Kapitel detailliert erklärt.
+
+\subsection{Aufbau der Arbeit}
+Im Laufe der Arbeit sollen zuerst im Kapitel "`Einleitung"' verschiedene Trackingverfahren vorgestellt werden um das verwendete in einen Kontext einzuordnen. Des Weiteren werden die verschiedenen verwendeten Grundtechniken mithilfe ihrer Algorithmen und Begriffe im Detail im Kapitel "`Grundlagen"' erklärt. 
+\newline Im Hauptkapitel "`Implementierung"' wird zunächst auf die gegebene Hardware und verwendete Software, sowie Bibliotheken eingegangen. Daraufhin wird der Ansatz der Konzeptphase erläutert und es wird auf Einzelheiten der Implementierung eingegangen. Im nächsten Kapitel wird das Ergebnis der Implementierung präsentiert und mithilfe verschiedener Videos und Einstellungen auf Performence getestet und ausgewertet.
+\newline Ein Ausblick bildet den Abschluss der Arbeit. In diesem werden Stärken und Schwächen der Implementierung diskutiert, sowie Verbesserungsvorschläge erwähnt und in einem Fazit zusammengefasst.
+
+
+
+
+\subsection{Stand der Technik}
+In diesem Kapitel wird die Arbeit in den Kontext schon existierender Arbeiten eingeordnet und auf mit in ihrer verwendeten, verwandten Techniken eingegangen. Zunächst wird durch die verschiedenen Grundtechniken des Trackings, das in dieser Arbeit verwendete genauer eingeordnet und in diesem Bereich auf die bereits existierenden verschiedenen und auch relevanten Algorithmen eingegangen.
+
+\subsection{Markerbasiertes Tracking}
+
+Das Markerbasierte Trackingverfahren ist die einfachste und am schnellsten umsetzbare Form des Trackings. Wie bereits in der Einleitung angeschnitten, müssen diese Marker(siehe Abb., Bit-Codes) in der Welt angebracht werden und deren Position, also die genaue Position der vier Eckpunkte, in der Welt bekannt sein, damit relativ zu diesen z.B. ein Würfel an der richtigen Stelle in der Welt gerendert werden kann. Soll z.B. dieser Würfel direkt auf dem Marker gerendert werden, so ist dies natürlich nicht nötig.
+\newline Durch einfache Kantendetektionsalgorithmen, können diese durch ihre einmaligen nicht in der Natur vorkommenden Muster sehr gut getrackt und voneinander unterschieden werden. Dieser Vorteil, was das Verfahren sehr robust und zuverlässig macht, ist zugleich auch der große Nachteil dieses Verfahrens, da die Marker in dem angebrachten Raum stark auffallend sind, was je nach Szenario unerwünscht oder auch nicht möglich ist. Alternativ und immer populärer wird deshalb das markerlose Tracking eingesetzt.
+\newline  BILD eines MARKERS (z.B. artoolkit)
+
+\subsection{Markerloses/Modellbasiertes Tracking}
+
+Wie der Name des Verfahrens schon zu erkennen gibt, wird beim Markerlosen Tracking kein Marker verwendet. Was zur Folge hat, dass über andere Wege die Kamerapose bestimmt werden muss um an der richtigen Stelle rendern zu können. Im markerlosen Bereich werden dazu häufig verschiedene Formen von Sensorik verwendet. Seien es Positionssensoren, wie GPS oder in diesem Sinne auch WLAN-Stärke, Bewegungssensoren, wie ein Girosensor oder ein Kompass, oder andere Sensoren, wie Ultraschall, so dass der Abstand zu einem Hindernis ermittelt werden kann.
+\newline Das modellbasierte Verfahren setzt voraus, dass es von dem zu Trackendem Objekt oder einer Umgebung ein exaktes Modell gibt, so dass es in irgendeiner Form zu einem Abgleich dieses Modells und des Kamerabilds kommen kann. Das genauer verwendete Verfahren wird im Kapitel der "`Grundlagen "` vorgestellt. 
+
+\subsection{Kantenbasierte Bildvergleiche?}
+Canny, Sobel, Hough   Vergleichsarten -> recherche, Sebastian Kowalzky Houghtransformation war nix
+
+Definition des Ähnlichkeitsmaßes(Schwellwertes), 
+
+\section{Grundlagen}
+In diesem Kapitel werden die verschiedenen Grundlagen, welche für das Verständnis dieser Arbeit notwendig sind, genau erklärt. Dabei sollen sowohl die verwendeten Algorithmen als auch die Begriffe des Trackings und der Bildverarbeitung vorgestellt werden.
+
+
+\subsection{Analyse durch Synthese}
+Diese Methode setzt voraus, dass ein exaktes 3D-Modell der Umgebung vorhanden ist. Des Weiteren ist eine initiale Pose nötig, so dass der Algorithmus zu Beginn eine Kamerapose im Weltkoordinatensystem hat, von welcher aus er starten kann. Auf dessen Basis wird das aktuelle Kamerabild errechnet, indem die Pose des vorherigen bekannt ist und in deren nächster Umgebung(z.B. mithilfe des Partikelfilters) neue synthetische Bilder gerendert werden. Diese werden mit dem aktuellen Bild entweder merkmals- oder ähnlichkeitsbasiert abgeglichen, so dass das synthetische Bild mit der höchsten Ähnlichkeit die neue Kamerapose ist.
+
+\includegraphics[width = \textwidth]{bilder/ADS}
+\begin{center}
+\textit{Abb.1: ADS Schema}
+\end{center}
+
+\subsection{Partikelfilter}
+Ein Partikelfilter ist allgemein ein Algorithmus mithilfe dessen sich der Zustand eines sich in Bewegung befindenden Systems schätzen lässt.
+In diesem Fall bedeutet das, dass sich durch diesen Algorithmus die Kamerapose schätzen lässt. Es funktioniert in der Weise, dass um die letzte bekannte Kameraposition eine Partikelwolke mithilfe der Normalverteilung aufgespannt wird.
+
+\subsection{Sobelfilter}
+
+\section{Implementierung}
+
+\subsection{Software/Hardware}
+
+\textbf{Hardware:}
+\begin{itemize}
+	\item Laptop mit Windows 8 und Intel Core i5-3210M 2,5GHz CPU, 4GB Memory, GeForce GT 635M
+\end{itemize}
+
+\textbf{Software:}
+\begin{itemize}
+  \item C++
+	\newline Die Wahl von C++ ist mit der IDE einhergegangen.
+	\item Qt Creator 3.1.2 Based on Qt 5.3.1(MSVC 2012, 32 bit) 
+	\newline Qt bringt die Standardfunktionen einer IDE mit und auch eine recht einfache und schnelle Funktion GUIs zu erstellen.	
+	\item Blender 2.68a 
+	\newline Mit Blender wurde das Model erstellt.
+	\item FFmpeg 
+	\newline Ein Konsolentool um Videos zu Konvertieren, zu schneiden und in der Auflösung anzupassen.
+\end{itemize}
+
+\subsection{Bibliotheken}
+
+\begin{itemize}
+	\item OpenCV
+	\item Glew
+	\item GLM
+	\item Particle++ sollte benutzt werden, leider nicht möglich in dieser Kombination, da bestehendes projekt mit der opencv version nicht c++					11 kann
+\end{itemize}
+
+\subsection{Anforderungen}
+\subsection{Umsetzungsansatz}
+\subsection{Details der Implementierung}
+
+\section{Ergebnisse}
+\subsection{GUI? ist ja nicht von mir}
+\subsection{Performance}
+
+\section{Ausblick und Fazit}
+\subsection{Verbesserungen}
+\subsection{Fazit}
+
+\section{Anhang}
+
+\section{Fragen}
+-Grundlagen nach und nach ergänzen? Ja
+\newline -Der oder das Filter? Das Filter
+\newline -Nicht zu viel vorstellen(andere Methoden, besonders markerbasiert eher nicht), da nur BA-Arbeit? Verfahren wie Partikelfilter nicht so ausführlich wie MNohn? -Markerbasiert nicht, kein SLAM, Partikelfilter recht ausführlich
+\newline -Abb. aus Primärliteratur referenzieren?! Ja
+\newline -Partikelfilter in Aufbau nach ADS? Ja. Benutzt der Partikelfilter nur die letzte Pose oder auch die Bewegungstendenz der vorherigen? Beides, kommt auf die Implementierung an
+\newline -Was gehört zu ADS, auch Gauß oder Partikelfilter? ADS ist rendern und vergleich
+\newline -ADS sowohl merkmals- als auch ähnlichkeitsbasiert vorstellen? Ja. Umsetzung aber ähnlichkeitsbasiert(kanten) oder freie Wahl? Ja.
+\newline -Welches Betriebssystem? Windows
+\newline -Wann bist du in Singapur? August-Oktober
+\newline -Edge based Tracking blob anschauen
+
+\subsection{1.1}
+-lineare verfahren -> Merkmalskorrespondenzen
+\newline -nichtlineare verfahren -> Ähnlichkeitsbasiert
+\newline - Analyse auf Kantenbildern mithilfe der Teabox -> Haus/Stadt
+\newline - Schwarz-Weiß Eingabebild?
+\newline - Sobeloperator zur Kantendetektion -> sieht gut aus
+\newline - Cannyoperator nur ein Pixel breite Kante -> Dilatation verstärken?
+\newline -Hough-Transformation braucht parametrisierbare Form
+\newline - Webcam vom Laptop oder externe? Video -> Auflösung 800x600
+\newline - Qt und OpenCV?Ja
+
+\subsection{1.2}
+-erwähnen, dass die GUI, welche Jochen implementiert hat benutzt wurde...wie? wo? Grundfunktionen erläutern und als basis verwendet wurde
+-die wahl der software war somit ja nicht frei?! erwähnen?
+-Particle++ sollte benutzt werden, leider nicht möglich in dieser Kombination, da bestehendes projekt mit der opencv version nicht c++					11 kann....  auch erwähnen und warum es nicht benutzt werden konnte
+-rel. vergleich der synthetischen bilder, da sonst die box wegdriftet
+-ist der partikelfilter nur streuung und auswahl des besten partikels? plus bewegung die daraus geschätzt wird(erweiterung)
+-im kapitel Implementierung die unterkapitel anforderungen und dann umsetzungsansatz? ok
+-wo genau den aufbau der arbeit, den entwurf einbringen? beim umsetungsansatz?
+-evaluierung: geschwindigkeit, 2objekte, mehrere videos
+todo:
+-code schicken + shader...fertig
+-neues objekt -> 3d modell
+-vorverarbeitung: gauß, gradientendirection berücksichtigen, spreading
+
+
+\end{document}

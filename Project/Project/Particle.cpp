@@ -9,7 +9,7 @@
 particle::particle()
 {
     dim = 3;
-    nParticles = 5;
+    nParticles = 15;
 }
 
 void particle::setMaxRange(float x, float y, float z){
@@ -116,29 +116,29 @@ void particle::genParticles(glm::vec3 particleV)
       for (int i = 0; i < condens->SamplesNum; i++) {
 
          //Berechnung der Abweichung
-         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
-         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
-         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
-         condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
+//         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
+//         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
+//         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
+//         condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
 
          // Partikelstreuung werde ich benötigen
-         cv::Point3f partPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
+         //cv::Point3f partPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
          glm::vec3 partCenter(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
 
-         particleCenterM(i,0) = partPt.x;
-         particleCenterM(i,1) = partPt.y;
-         particleCenterM(i,2) = partPt.z;
+         particleCenterM(i,0) = partCenter.x;
+         particleCenterM(i,1) = partCenter.y;
+         particleCenterM(i,2) = partCenter.z;
          genParticles(lookAtCamera, partCenter, i);
          //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
        }
 
-       cvConDensUpdateByTime(condens);
+       //cvConDensUpdateByTime(condens);
 
        //Bester Partikel, ist aber keine der Partikelpositionen
-       cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
-       newCameraV.push_back(statePt);
+       //cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
+       //newCameraV.push_back(statePt);
        //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
 
@@ -174,31 +174,29 @@ void particle::genParticles(glm::vec3 particleV, glm::vec3 partCenter, int j)
       for (int i = 0; i < condens->SamplesNum; i++) {
 
          //Berechnung der Abweichung
-         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
-         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
-         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
-         condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
+//         float diffX = (particleV.x - condens->flSamples[i][0])/xRange;
+//         float diffY = (particleV.y - condens->flSamples[i][1])/yRange;
+//         float diffZ = (particleV.z - condens->flSamples[i][2])/zRange;
+//         condens->flConfidence[i] = 1.0 / (sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ));
 
          // Partikelstreuung werde ich benötigen
-         cv::Point3f lookAtPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
+         //cv::Point3f lookAtPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
          glm::vec3 partLookAt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
 
-         particleLookAtM(i + j * nParticles,0) = lookAtPt.x;
-         particleLookAtM(i + j * nParticles,1) = lookAtPt.y;
-         particleLookAtM(i + j * nParticles,2) = lookAtPt.z;
+         particleLookAtM(i + j * nParticles,0) = partLookAt.x;
+         particleLookAtM(i + j * nParticles,1) = partLookAt.y;
+         particleLookAtM(i + j * nParticles,2) = partLookAt.z;
 
+         //writeFile(partCenter, partLookAt, "particle.txt");
          //generateViews(partCenter, partLookAt, i + j * nParticles);
-         writeFile(partCenter, partLookAt, "particle.txt");
-         //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
-         //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
        }
 
-       cvConDensUpdateByTime(condens);
+       //cvConDensUpdateByTime(condens);
 
        //Bester Partikel, ist aber keine der Partikelpositionen
-       cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
-       newCameraV.push_back(statePt);
+       //cv::Point3f statePt(condens->State[0], condens->State[1], condens->State[2]);
+       //newCameraV.push_back(statePt);
        //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
 

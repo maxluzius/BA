@@ -268,7 +268,7 @@ private:
      */
     void perspectiveProjection();
 
-    Shader* _program; ///< Shader program for the mesh
+    Shader* _likelihood; ///< Shader program for the mesh
     Shader* _imageProgram; ///< Shader program for the screen filling triangle
     Shader* _sobelProgram; ///< Shader program for sobel filtering
     Shader* _meshProgram; ///< Shader program for the teaboxmesh

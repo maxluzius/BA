@@ -1,4 +1,5 @@
 #include "particle.h"
+#include "glm/gtc/matrix_transform.hpp"
 #include <Windows.h>
 
  vector<cv::Point3f> cameraV, newCameraV;
@@ -10,7 +11,6 @@ particle::particle()
     dim = 3;
     nParticles = 5;
 }
-
 
 void particle::setMaxRange(float x, float y, float z){
     xRange = x;  // Vor/zurück "Z-Achse" der Kamera
@@ -123,11 +123,12 @@ void particle::genParticles(glm::vec3 particleV)
 
          // Partikelstreuung werde ich benötigen
          cv::Point3f partPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
+         glm::vec3 partCenter(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
 
          particleCenterM(i,0) = partPt.x;
          particleCenterM(i,1) = partPt.y;
          particleCenterM(i,2) = partPt.z;
-         genParticles(lookAtCamera, partPt, i);
+         genParticles(lookAtCamera, partCenter, i);
          //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
@@ -141,7 +142,7 @@ void particle::genParticles(glm::vec3 particleV)
        //cout << "NeuePose: X-Achse: " << condens->State[0] << "/" << lastCam(0) << " Y-Achse: " << condens->State[1] << "/" << lastCam(1)<< " Z-Achse: " << condens->State[2] << "/" << lastCam(2)<< endl;
 }
 
-void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt, int j)
+void particle::genParticles(glm::vec3 particleV, glm::vec3 partCenter, int j)
 {
     //Bereich der Partikelstreuung
     setRanges(particleV.x, particleV.y, particleV.z, 0.5);
@@ -180,11 +181,14 @@ void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt, int j)
 
          // Partikelstreuung werde ich benötigen
          cv::Point3f lookAtPt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
+         glm::vec3 partLookAt(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2]);
 
          particleLookAtM(i + j * nParticles,0) = lookAtPt.x;
          particleLookAtM(i + j * nParticles,1) = lookAtPt.y;
          particleLookAtM(i + j * nParticles,2) = lookAtPt.z;
-         writeFile(partPt, lookAtPt, "particle.txt");
+
+         //generateViews(partCenter, partLookAt, i + j * nParticles);
+         writeFile(partCenter, partLookAt, "particle.txt");
          //cout << "PartikelPos: X-Achse: " << condens->flSamples[i][0] << "/" << lastCam(0) << " Y-Achse: " << condens->flSamples[i][1] << "/" << lastCam(1)<< " Z-Achse: " << condens->flSamples[i][2] << "/" << lastCam(2)<< endl;
          //writeFile(condens->flSamples[i][0], condens->flSamples[i][1], condens->flSamples[i][2], "particlePos.txt");
 
@@ -199,14 +203,14 @@ void particle::genParticles(glm::vec3 particleV, cv::Point3f partPt, int j)
 }
 
 
-void particle::writeFile(cv::Point3f position, cv::Point3f lookAt, QString name){
+void particle::writeFile(glm::vec3 partCenter, glm::vec3 partLookAt, QString name){
     QFile file(name);
     //if(file.exists()){
     file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
     QTextStream out(&file);
     //gezeichnet wird der vector von position zu lookAt + position
     //Ausgabe ist x/z/y da die Y und Z Achse in gnuplot vertauscht ist
-    out << position.x << "   " << position.z << "   " << position.y << "   " << lookAt.x - position.x << "   " << lookAt.z - position.z << "   " << lookAt.y - position.y << "\n";
+    out << partCenter.x << "   " << partCenter.z << "   " << partCenter.y << "   " << partLookAt.x - partCenter.x << "   " << partLookAt.z - partCenter.z << "   " << partLookAt.y - partCenter.y << "\n";
 
     file.close();
     //}
@@ -215,6 +219,18 @@ void particle::writeFile(cv::Point3f position, cv::Point3f lookAt, QString name)
 void particle::print(float x, float y, float z){
         cout << x << "/" << y << "/" << z << endl;
 
+}
+
+void particle::generateViews(glm::vec3 center, glm::vec3 lookAt, int i){
+    viewArray = new glm::mat4[25];
+    glm::vec3 up = glm::vec3(0,1,0);
+
+    newViewMatrix = glm::lookAt(center, lookAt, up);
+    viewArray[i] = newViewMatrix;
+}
+
+glm::mat4 * particle::getViewArray(){
+    return viewArray;
 }
 
 void particle::paint()

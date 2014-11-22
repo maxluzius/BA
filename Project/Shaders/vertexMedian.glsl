@@ -41,12 +41,12 @@ void main() {
 
      vec2 widthStep = vec2(1.0/720, 0.0);
      vec2 widthStepD = vec2(2.0/720, 0.0);
-     vec2 heightStep = vec2(0.0, 1.0/480);
-     vec2 heightStepD = vec2(0.0, 2.0/480);
-     vec2 widthHeightStep = vec2(1.0/720, 1.0/480);
-     vec2 widthHeightStepD = vec2(2.0/720, 2.0/480);
-     vec2 widthNegativeHeightStep = vec2(1.0/720, -1.0/480);
-     vec2 widthNegativeHeightStepD = vec2(2.0/720, -2.0/480);
+     vec2 heightStep = vec2(0.0, 1.0/405);
+     vec2 heightStepD = vec2(0.0, 2.0/405);
+     vec2 widthHeightStep = vec2(1.0/720, 1.0/405);
+     vec2 widthHeightStepD = vec2(2.0/720, 2.0/405);
+     vec2 widthNegativeHeightStep = vec2(1.0/720, -1.0/405);
+     vec2 widthNegativeHeightStepD = vec2(2.0/720, -2.0/405);
 
      textureCoordinate = passUV.xy;
      leftTextureCoordinate = passUV.xy - widthStep;

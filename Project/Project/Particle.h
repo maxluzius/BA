@@ -24,8 +24,8 @@ public:
     void paint();
     void initParticle(Camera& camera);
     void genParticles(glm::vec3 particleV);
-    void genParticles(glm::vec3 particleV, cv::Point3f partPt, int count);
-    void writeFile(cv::Point3f position, cv::Point3f lookAt, QString name);
+    void genParticles(glm::vec3 particleV, glm::vec3 partCenter, int count);
+    void writeFile(glm::vec3 partCenter, glm::vec3 partLookAt, QString name);
     void setMaxRange(float x, float y, float z);
     void setMinRange(float x, float y, float z);
     float getMaxRangeX();
@@ -37,10 +37,13 @@ public:
     cv::Mat_<float> getParticleLookAtM();
     void setRanges(float x, float y, float z, float r);
     void print(float x, float y, float z);
+    void generateViews(glm::vec3 center, glm::vec3 lookAt, int i);
+    glm::mat4 * getViewArray();
 
 private:
     int dim;
     int nParticles;
+
 
     float xRange;
     float yRange;
@@ -51,6 +54,8 @@ private:
     cv::Mat_<float> particleLookAtM;
     glm::vec3 centerCamera;
     glm::vec3 lookAtCamera;
+    glm::mat4 * viewArray;
+    glm::mat4 newViewMatrix;
 
 };
 

@@ -53,10 +53,8 @@ private:
     int maxLikelihood;
     GLuint PixelCountSet;
     GLuint PixelCountAll;
+    GLuint isDone;
     float max;
-    int numberPos;
-    int numberLookAt;
-    float relVal;
     float bestRelVal;
 
 };

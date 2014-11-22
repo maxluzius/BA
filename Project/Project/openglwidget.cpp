@@ -45,7 +45,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) :
 
 OpenGLWidget::~OpenGLWidget()
 {
-    delete _program;
+    delete _likelihood;
     delete _imageProgram;
 }
 
@@ -372,9 +372,6 @@ void OpenGLWidget::setFrame(int frame)
 
 void OpenGLWidget::initializeGL()
 {
-    makeCurrent();
-    fbo = new QGLFramebufferObject(_viewportWidth, _viewportHeight);
-
     glewExperimental = true;
 
     GLenum err = glewInit();
@@ -390,15 +387,15 @@ void OpenGLWidget::initializeGL()
     glGenTextures(1, &handle);
 
     glBindTexture(GL_TEXTURE_2D, handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 720,480, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 720,405, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 
 
     glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
-    _program = new Shader("../Shaders/vertexshader.glsl","../Shaders/fragmentshader.glsl");
+    _likelihood = new Shader("../Shaders/vertexLikeliHood.glsl","../Shaders/fragmentLikeliHood.glsl");
     _imageProgram = new Shader("../Shaders/screenFillingTriVert.glsl","../Shaders/showImageFrag.glsl");
     _sobelProgram = new Shader("../Shaders/vertexSobel.glsl","../Shaders/fragmentSobel.glsl");
     _meshProgram = new Shader("../Shaders/vertexshaderMesh.glsl","../Shaders/fragmentshaderMesh.glsl");
@@ -409,9 +406,9 @@ void OpenGLWidget::initializeGL()
     screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
     screenFillingTri.texLoc = glGetUniformLocation(_sobelProgram->id(),"tex");
 
-    mLoc = glGetUniformLocation(_program->id(),"M");
-    vLoc = glGetUniformLocation(_program->id(),"V");
-    pLoc = glGetUniformLocation(_program->id(),"P");
+    mLoc = glGetUniformLocation(_likelihood->id(),"M");
+    vLoc = glGetUniformLocation(_likelihood->id(),"V");
+    pLoc = glGetUniformLocation(_likelihood->id(),"P");
 
     screenFillingTri.vertices[0] = -1;
     screenFillingTri.vertices[1] = -1;
@@ -467,6 +464,10 @@ void OpenGLWidget::draw()
         GLenum drawBufferHandle[1] = {GL_COLOR_ATTACHMENT0};
         glDrawBuffers(1, drawBufferHandle);
 
+
+
+        /////beide shader in einen schreiben
+
         //////////////////////
         // Draw Medianfilter//
         //////////////////////
@@ -475,7 +476,7 @@ void OpenGLWidget::draw()
 
         // Render to our framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
-        glViewport(0,0,720,480);
+        glViewport(0,0,720,405);
 
         glBindVertexArray(screenFillingTri.vao);
         glActiveTexture(GL_TEXTURE0);
@@ -536,7 +537,7 @@ void OpenGLWidget::draw()
         //shows the rendered texture if true
         if(true){
         //Bild zum Vergleich wird erstellt
-        cv::Mat img(480, 720, CV_8UC3);
+        cv::Mat img(405, 720, CV_8UC3);
 
         //use fast 4-byte alignment (default anyway) if possible
         glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
@@ -561,7 +562,7 @@ void OpenGLWidget::draw()
     ///////////////////////////
 
 
-        renderObj.renderMeshes(camera, mesh, camPartikel,_program, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle, relMaxValue, newCenter, newLookAt);
+        renderObj.renderMeshes(camera, mesh, camPartikel,_likelihood, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle, relMaxValue, newCenter, newLookAt);
 
         ////////////////////
         // Draw Background//

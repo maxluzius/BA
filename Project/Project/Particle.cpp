@@ -9,7 +9,7 @@
 particle::particle()
 {
     dim = 3;
-    nParticles = 15;
+    nParticles = 20;
 }
 
 void particle::setMaxRange(float x, float y, float z){
@@ -230,19 +230,5 @@ void particle::generateViews(glm::vec3 center, glm::vec3 lookAt, int i){
 glm::mat4 * particle::getViewArray(){
     return viewArray;
 }
-
-void particle::paint()
-    {
-     glClearColor (1, 1, 1, 0);
-     glColor3f (0, 1, 0);
-     glPointSize (4);
-
-     glBegin (GL_POINTS);
-     glVertex2f (0, 0);
-
-     glEnd ();
-
-
-    }
 
 

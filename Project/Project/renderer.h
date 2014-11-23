@@ -39,7 +39,7 @@ public:
     renderer();
     void sobel();
     void rendern(Mesh* mesh);
-    void findBest(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, GLuint handle, float &relMaxValue, glm::vec3 &newCenter, glm::vec3 &newLookAt);
+    void findBest(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _program, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, GLuint handle, glm::vec3 &newCenter, glm::vec3 &newLookAt);
     int count(cv::Mat img);
     void likelihood(int videoCount, int particleCount);
     void initQuery();

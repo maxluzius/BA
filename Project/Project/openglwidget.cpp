@@ -562,7 +562,7 @@ void OpenGLWidget::draw()
     ///////////////////////////
 
 
-        renderObj.findBest(camera, mesh, camPartikel,_likelihood, _meshProgram, m, v, p, mLoc, vLoc, pLoc, fbo, handle, relMaxValue, newCenter, newLookAt);
+        renderObj.findBest(camera, mesh, camPartikel,_likelihood, _meshProgram, m, v, p, mLoc, vLoc, pLoc, handle, newCenter, newLookAt);
 
         ////////////////////
         // Draw Background//

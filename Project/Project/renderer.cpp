@@ -22,13 +22,13 @@ void renderer::likelihood(int videoCount, int particleCount){
         maxLikelihood = compare;
 }
 
-void renderer::findBest(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _likelihood, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, QGLFramebufferObject *fbo, GLuint handle, float &relMaxValue, glm::vec3 &newCenter, glm::vec3 &newLookAt){
+void renderer::findBest(Camera &camera,Mesh* mesh, particle camPartikel, Shader* _likelihood, Shader* _meshProgram, glm::mat4 m, glm::mat4 v, glm::mat4 p, GLuint mLoc,GLuint vLoc,GLuint pLoc, GLuint handle, glm::vec3 &newCenter, glm::vec3 &newLookAt){
 
     max = 0.0;
     cv::Mat_<float> centerMat = camPartikel.getParticleCenterM();
     cv::Mat_<float> lookAtMat = camPartikel.getParticleLookAtM();
     //querys to count the pixels
-    const int size = 225;
+    const int size = 400;
     GLuint queryArray[size];
     glGenQueries(size, queryArray);
     float meshsRelValue[size] = {0.0};

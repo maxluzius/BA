@@ -21,7 +21,6 @@ class particle
 {
 public:
     particle();
-    void paint();
     void initParticle(Camera& camera);
     void genParticles(glm::vec3 particleV);
     void genParticles(glm::vec3 particleV, glm::vec3 partCenter, int count);

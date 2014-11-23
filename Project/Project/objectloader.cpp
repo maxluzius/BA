@@ -70,14 +70,13 @@ bool ObjectLoader::loadObjectFromFile(const char* filename, Mesh* object)
     int normalCount; // every edge needs 2 normals. If only one is found, the second is 0,0,0 by default
     glm::vec3 n;
     bool secondaryN;
-    float eps = 0.001f;
+    float eps = 0.3f; //is upgradet from 0.001f
     Line3D* l;
     unsigned int index = 1;
     for(unsigned int v=5; v<object->vertices.size(); v+=6, index+=2)
     {
         normalCount = 0;
         secondaryN = false;
-
         l = new Line3D();
 
         x2 = object->vertices[v-2];

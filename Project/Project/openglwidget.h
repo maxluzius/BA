@@ -261,8 +261,6 @@ private:
     GLuint framebufferHandle;
     GLuint handle;
 
-    QGLFramebufferObject *fbo;
-
     /**
      * @brief Do a perspective projection
      */

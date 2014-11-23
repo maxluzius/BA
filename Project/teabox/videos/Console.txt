@@ -1,1 +1,0 @@
-ffmpeg -i teaboxnew.avi -s 420x405 teaboxnew2.avi
